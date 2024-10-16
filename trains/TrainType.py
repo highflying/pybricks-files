@@ -1,7 +1,6 @@
-
 class TrainTypeClass:
-    Passenger = 'passenger';
-    Goods = 'goods';
+    Passenger = "passenger"
+    Goods = "goods"
 
-TrainType = TrainTypeClass();
 
+TrainType = TrainTypeClass()

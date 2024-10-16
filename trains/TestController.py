@@ -14,51 +14,48 @@ sensor = ColorDistanceSensor(Port.B)
 
 hub.light.on(Color.GREEN)
 
-DEBUG = True;
+DEBUG = True
 
-broadcastTimer = StopWatch();
-isBroadcasting = False;
-loopTimer = StopWatch();
-codeTimer = StopWatch();
-prevReceived = None;
-prevColor = 'blue';
+broadcastTimer = StopWatch()
+isBroadcasting = False
+loopTimer = StopWatch()
+codeTimer = StopWatch()
+prevReceived = None
+prevColor = "blue"
 
 while True:
-    loopTimer.reset();
+    loopTimer.reset()
 
     if isBroadcasting and broadcastTimer.time() > 1000:
         if DEBUG:
-            print('Finished broadcasting');
+            print("Finished broadcasting")
 
-        hub.ble.broadcast(None);
-        isBroadcasting = False;
-        broadcastTimer.pause();
+        hub.ble.broadcast(None)
+        isBroadcasting = False
+        broadcastTimer.pause()
 
     if broadcastTimer.time() > 1000:
 
-        distance = sensor.distance();
+        distance = sensor.distance()
         if distance < 80:
-            codeTimer.reset();
-            sensor.light.off();
+            codeTimer.reset()
+            sensor.light.off()
             # if DEBUG:
             #     print('Broadcast start');
-            if prevColor == 'blue':
-                hub.light.on(Color.RED);
-                hub.ble.broadcast(0);
-                prevColor = 'red';
+            if prevColor == "blue":
+                hub.light.on(Color.RED)
+                hub.ble.broadcast(0)
+                prevColor = "red"
             else:
-                hub.light.on(Color.BLUE);
-                hub.ble.broadcast(1);
-                prevColor = 'blue';
-            isBroadcasting = True;
-            broadcastTimer.reset();
-            broadcastTimer.resume();
-            print('Code took', codeTimer.time())
+                hub.light.on(Color.BLUE)
+                hub.ble.broadcast(1)
+                prevColor = "blue"
+            isBroadcasting = True
+            broadcastTimer.reset()
+            broadcastTimer.resume()
+            print("Code took", codeTimer.time())
 
-
-
-    wait(50);
-    t = loopTimer.time();
+    wait(50)
+    t = loopTimer.time()
     if t > 51:
-        print('Loop took', t)
-
+        print("Loop took", t)

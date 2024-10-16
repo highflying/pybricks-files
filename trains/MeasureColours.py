@@ -9,15 +9,15 @@ hub = CityHub()
 
 sensor = ColorDistanceSensor(Port.B)
 
-hub.light.on(Color.YELLOW);
+hub.light.on(Color.YELLOW)
 
 while True:
-    got_color = sensor.hsv();
+    got_color = sensor.hsv()
 
-    print(got_color);
+    print(got_color)
 
-    colourName = get_colour(sensor);
+    colourName = get_colour(sensor)
 
     print(colourName)
 
-    wait(500);
+    wait(500)
