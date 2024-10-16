@@ -1,14 +1,11 @@
 from pybricks.hubs import TechnicHub
 from pybricks.parameters import Color, Port
-from pybricks.tools import wait, run_task, StopWatch
+from pybricks.tools import wait, StopWatch
 from pybricks.pupdevices import ColorDistanceSensor
-from TrainStatus import TrainStatus
-from Hubs import Hubs
-from Messages import Messages
+from Channels import Channels
 
 hub = TechnicHub(
-    broadcast_channel=Hubs.InnerLoopTrain,
-    # observe_channels=[Hubs.InnerLoopController]
+    broadcast_channel=Channels.InnerLoopTrain,
 )
 sensor = ColorDistanceSensor(Port.B)
 
@@ -40,8 +37,6 @@ while True:
         if distance < 80:
             codeTimer.reset()
             sensor.light.off()
-            # if DEBUG:
-            #     print('Broadcast start');
             if prevColor == "blue":
                 hub.light.on(Color.RED)
                 hub.ble.broadcast(0)

@@ -14,7 +14,7 @@ HSVColor = HSVColorClass()
 
 def get_colour(sensor):
     color = sensor.hsv()
-    # print(color);
+
     if (
         color.v > 55
         and color.h > 200

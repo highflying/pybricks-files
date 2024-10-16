@@ -1,19 +1,11 @@
 from pybricks.hubs import CityHub
 from pybricks.pupdevices import DCMotor, ColorDistanceSensor
 from pybricks.parameters import Color, Port
-from pybricks.tools import wait, run_task, StopWatch
+from pybricks.tools import wait, StopWatch
 from Colours import HSVColor, get_colour
-from Power import ramp_power
-from TrainStatus import TrainStatus
-from Hubs import Hubs
-from TrainType import TrainType
-from Messages import Messages
+from Channels import Channels
 
-
-hub = CityHub(
-    # broadcast_channel=Hubs.InnerLoopController,
-    observe_channels=[Hubs.InnerLoopTrain]
-)
+hub = CityHub(observe_channels=[Channels.InnerLoopTrain])
 
 motor = DCMotor(Port.A)
 sensor = ColorDistanceSensor(Port.B)
@@ -28,7 +20,7 @@ prevReceived = None
 while True:
     loopTimer.reset()
 
-    data = hub.ble.observe(Hubs.InnerLoopTrain)
+    data = hub.ble.observe(Channels.InnerLoopTrain)
     if DEBUG and data is not None and data != prevReceived:
         print("Received", data)
         prevReceived = data

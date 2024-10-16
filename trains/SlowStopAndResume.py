@@ -9,27 +9,6 @@ from Colours import HSVColor, get_colour
 isGoods = False
 isPassenger = False
 
-# def get_colour(sensor):
-#     color = sensor.hsv();
-#     if color.v > 60:
-#         # print(color);
-#         if color.h > 200 and color.h < 230 and color.s > 30 and color.s< 40:
-#             return 'grey';
-#         elif color.h > 210 and color.h < 230 and color.s > 90:
-#             return 'blue';
-#         elif color.h > 210 and color.h < 220 and color.s > 80:
-#             return 'mediumblue';
-#         elif color.h > 350 and color.h < 360:
-#             return 'red';
-#         elif color.h > 50 and color.h < 60:
-#             return 'yellow';
-#         elif color.h > 180 and color.h < 190:
-#             return 'teal';
-#         elif color.h > 130 and color.h < 140:
-#             return 'green';
-
-#     return 'none';
-
 broadcastChannel = Channels.OuterLoopController
 observeChannel = Channels.OuterLoopTrain
 
@@ -59,15 +38,10 @@ sensor = ColorDistanceSensor(Port.B)
 hub.light.on(Color.GREEN)
 hub.ble.broadcast(Messages.Stopped)
 
-DEBUG = False
-
 current_power = 0
 colourTimer = StopWatch()
-broadcastTimer = StopWatch()
-isBroadcasting = False
 reversing = False
 leftSiding = False
-prevReceived = None
 
 
 def reverseTrain():
@@ -87,16 +61,13 @@ def reverseTrain():
 
 
 def stopTrain():
-    global current_power, reversing, isBroadcasting
+    global current_power, reversing
 
     if current_power != 0:
         motor.stop()
         current_power = 0
         reversing = False
-        isBroadcasting = True
         hub.ble.broadcast(Messages.Stopped)
-        broadcastTimer.reset()
-        broadcastTimer.resume()
 
 
 def slowTrain():
@@ -111,14 +82,11 @@ def slowTrain():
 
 
 def startTrain():
-    global current_power, leftSiding, isBroadcasting
+    global current_power, leftSiding
 
     if current_power == 0:
         current_power = fast_power
         motor.dc(fast_power)
-        isBroadcasting = True
-        broadcastTimer.reset()
-        broadcastTimer.resume()
         hub.ble.broadcast(Messages.Running)
 
         if isGoods:
@@ -132,15 +100,6 @@ loopTimer = StopWatch()
 
 while True:
     loopTimer.reset()
-
-    # if isBroadcasting and broadcastTimer.time() > 3000:
-    #     # if DEBUG:
-    #     print('Finished broadcasting')
-    #     # wait(30)
-    #     hub.ble.broadcast(2)
-    #     # wait(110)
-    #     isBroadcasting = False
-    #     broadcastTimer.pause()
 
     data = hub.ble.observe(observeChannel)
 
