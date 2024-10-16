@@ -11,17 +11,13 @@ sensor = ColorDistanceSensor(Port.B)
 
 hub.light.on(Color.YELLOW);
 
+while True:
+    got_color = sensor.hsv();
 
-async def main():
-    while True:
-        got_color = await sensor.hsv();
+    print(got_color);
 
-        print(got_color);
+    colourName = get_colour(sensor);
 
-        colourName = await get_colour(sensor);
+    print(colourName)
 
-        print(colourName)
-
-        await wait(500);
-
-run_task(main())
+    wait(500);

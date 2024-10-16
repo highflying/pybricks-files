@@ -1,124 +1,231 @@
 from pybricks.hubs import CityHub
 from pybricks.pupdevices import DCMotor, ColorDistanceSensor
 from pybricks.parameters import Color, Port
-from pybricks.tools import wait, multitask, run_task, StopWatch
-from Colours import HSVColor, get_colour
-from Power import ramp_power
+from pybricks.tools import wait, StopWatch
 
-hub = CityHub(broadcast_channel=2,observe_channels=[1]);
+ChannelInnerLoopTrain = 1;
+ChannelInnerLoopController = 21;
+ChannelOuterLoopTrain = 41;
+ChannelOuterLoopController = 61;
 
-motor = DCMotor(Port.A);
-sensor = ColorDistanceSensor(Port.B);
+isGoods = False;
+isPassenger = True;
 
-fast_power = 50;
-slow_power = 40;
+def get_colour(sensor):
+    color = sensor.hsv();
+    if color.v > 60:
+        # print(color);
+        if color.h > 200 and color.h < 230 and color.s > 30 and color.s< 40:
+            return 'grey';
+        elif color.h > 210 and color.h < 230 and color.s > 90:
+            return 'blue';
+        elif color.h > 210 and color.h < 220 and color.s > 80:
+            return 'mediumblue';
+        elif color.h > 350 and color.h < 360:
+            return 'red';
+        elif color.h > 50 and color.h < 60:
+            return 'yellow';
+        elif color.h > 180 and color.h < 190:
+            return 'teal';
+        elif color.h > 130 and color.h < 140:
+            return 'green';
 
-hub.light.on(Color.RED);
+    return 'none';
 
-current_power = 0;
-broadcast_msg = 'stopped';
+broadcastChannel = ChannelOuterLoopController
+observeChannel = ChannelOuterLoopTrain
 
-Event_Stop_Train = const('stop_train');
-Event_Start_Train = const('start_train');
-Event_Slow_Train = const('slow_train');
+hub = CityHub(
+    broadcast_channel=broadcastChannel,
+    observe_channels=[observeChannel]
+)
 
-events = [];
+motor = DCMotor(Port.A)
+sensor = ColorDistanceSensor(Port.B)
 
-async def handle_broadcast():
-    global broadcast_msg;
-    prev_broadcast_msg = None;
-    timer = StopWatch();
+fast_power = 55
+slow_power = 35
 
-    while True:
-        if broadcast_msg != prev_broadcast_msg:
-            await hub.ble.broadcast(broadcast_msg);
-            timer.reset();
-        elif timer.time() > 10000:
-            await hub.ble.broadcast(None);
-            timer.pause();
-            timer.reset();
-        
-        prev_broadcast_msg = broadcast_msg;
-        
-        await wait(100);
+hub.light.on(Color.GREEN)
+# hub.ble.broadcast(False)
 
-async def detect_colour():
-    global broadcast_msg;
+DEBUG = True
+
+current_power = 0
+colourTimer = StopWatch()
+broadcastTimer = StopWatch()
+isBroadcasting = False
+reversing = False
+leftSiding = False
+prevReceived = None
+
+def reverseTrain():
+    global current_power, leftSiding, reversing
+
+    if current_power > 0:
+        if isPassenger or (isGoods and not leftSiding):
+            # if DEBUG:
+            #     print('Stopping and reversing train')
+
+            motor.stop()
+            current_power = 0
+            # wait(100)
+
+            motor.dc(slow_power * -1)
+            current_power = slow_power * -1
+            reversing = True
+            # lightOff = False
+        elif isGoods and leftSiding:
+            # if DEBUG:
+            #     print('Not left siding')
+            leftSiding = False
+    #     elif DEBUG:
+    #         print('not here either')
+    # elif DEBUG:
+    #     print('Already stopped, not reversing')
+
+def stopTrain():
+    global current_power, reversing, isBroadcasting;
+
+    if current_power != 0:
+        # if DEBUG:
+        #     print('Stopping train')
+        motor.stop()
+        current_power = 0
+        reversing = False
+        isBroadcasting = True
+        wait(30)
+        hub.ble.broadcast(0)
+        broadcastTimer.reset()
+        broadcastTimer.resume()
+        wait(110)
+
+    # elif DEBUG:
+    #     print('Already stopped')
+
+def slowTrain():
     global current_power;
-    timer = StopWatch();
 
-    while True:
-        if timer.time() < 500:
-            await wait(50);
-            continue;
-
-        got_color = await get_colour(sensor);
-        if got_color == HSVColor.MEDIUMBLUE:
-            hub.light.on(Color.CYAN);
-            events.append(Event_Stop_Train);
-            timer.reset();
-
-        elif got_color == HSVColor.BLUE:
-            hub.light.on(Color.BLUE);
-            events.append(Event_Slow_Train);
-            timer.reset();
-
+    if current_power > slow_power:
+        if leftSiding:
+            pass
+            # if DEBUG:
+            #     print('Ignoring slow')
         else:
-            await wait(50);
+            # if DEBUG:
+            #     print('Slowing train')
+            motor.dc(slow_power)
+            current_power = slow_power
+            # lightOff = False
+    # elif DEBUG:
+    #     print('Already slow')
 
-async def handle_events():
-    global events;
-    global broadcast_msg;
-    global current_power;
-    global fast_power;
-    global slow_power;
+def startTrain():
+    global current_power, leftSiding, isBroadcasting;
 
-    while True:
-        if len(events) > 0:
-            event = events.pop();
-            if event == Event_Stop_Train:
-                if current_power > 0:
-                    motor.stop();
-                    current_power = 0;       
-                    broadcast_msg = 'stopped';
+    if current_power == 0:
+        # if DEBUG:
+        #     print('Starting train')
+        current_power = fast_power
+        motor.dc(fast_power)
+        isBroadcasting = True
+        broadcastTimer.reset()
+        broadcastTimer.resume()
+        wait(30)
+        hub.ble.broadcast(1)
+        wait(100)
+ 
+        # lightOff = False
+        if isGoods:
+            # if DEBUG:
+            #     print('Left siding')
+            leftSiding = True
+    else:
+        # if DEBUG:
+        #     print('Stopping train again?')
+        motor.stop()
+        current_power = 0
 
-            elif event == Event_Slow_Train:
-                if current_power > slow_power:
-                    await ramp_power(motor, fast_power, slow_power);
-                    current_power = slow_power;
+loopTimer = StopWatch();
+n = 0
+while True:
+    loopTimer.reset();
+    # if DEBUG:
+    #     n = n + 1
+    #     print('In loop', n, current_power)
 
-            elif event == Event_Start_Train:
-                if current_power == 0:
-                    broadcast_msg = 'running';
-                    await ramp_power(motor, 0, fast_power);
-                    current_power = fast_power;
-            
-            await wait(500);
-        else:
-            await wait(100);
+    # event = ''
 
-async def handle_msgs():
-    global broadcast_msg;
-    global current_power;
-    global events;
-    timer = StopWatch();
+    # if isBroadcasting and broadcastTimer.time() > 3000:
+    #     # if DEBUG:
+    #     print('Finished broadcasting')
+    #     # wait(30)
+    #     hub.ble.broadcast(2)
+    #     # wait(110)
+    #     isBroadcasting = False
+    #     broadcastTimer.pause()
 
-    while True:
-        if timer.time() < 2000:
-            await wait(50);
-            continue;
+    # wait(30);
+    data = hub.ble.observe(observeChannel)
 
-        data = hub.ble.observe(1)
+    if current_power == 0:
+        # if DEBUG and data is not None: # and data != prevReceived:
+        # if data is not None:
+        # print('Received', data)
+        #     prevReceived = data
+        if data == 1:
+            # if DEBUG:
+            #     print('Got start')
+            # event = 'start'
+            startTrain()
+    
+    # wait(50)
 
-        if data is not None and data == 'start' and current_power == 0:
-            hub.light.on(Color.GREEN);
-            events.append(Event_Start_Train);
-            timer.reset();
-        else:
-            await wait(50);
+    # got_color = get_colour(sensor)
 
+    if current_power != 0 and colourTimer.time() > 1000:
+        got_color = get_colour(sensor)
 
-async def main():
-    await multitask(handle_msgs(), detect_colour(), handle_broadcast(), handle_events());
+        if got_color == 'mediumblue':
+            # if DEBUG:
+            print('Got mediumblue')
+            colourTimer.reset()
 
-run_task(main())
+            if isPassenger:
+                # event = 'stop'
+                stopTrain()
+            elif isGoods:
+                if reversing:
+                    # event = 'stop'
+                    stopTrain()
+                elif current_power != 0:
+                    # event = 'slow'
+                    slowTrain()
+                # else:
+                #     print('Should not be here')
+
+        elif isPassenger and got_color == 'teal':
+            # if DEBUG:
+            print('Got teal')
+            # event = 'slow'
+            colourTimer.reset()
+            slowTrain()
+
+        elif isGoods and got_color == 'teal':
+            # if DEBUG:
+            #     print('Got teal')
+            # event = 'reverse'
+            colourTimer.reset()
+            reverseTrain()
+
+        # elif DEBUG and got_color != 'none':
+        #     print('Got', got_color);
+    # elif current_power == 0:
+    #     print('Extra wait')
+    #     wait(500);
+
+    t = 10 - loopTimer.time();
+    if t > 0:
+        # print('Wait extra', t)
+        wait(t)
+

@@ -1,87 +1,138 @@
 from pybricks.hubs import TechnicHub
 from pybricks.parameters import Color, Port
-from pybricks.robotics import DriveBase
-from pybricks.tools import wait, multitask, run_task, StopWatch
+from pybricks.tools import wait, StopWatch
 from pybricks.pupdevices import ColorDistanceSensor
 
-hub = TechnicHub(broadcast_channel=1,observe_channels=[2])
+class HubsClass:
+    InnerLoopTrain = 1;
+    InnerLoopController = 21;
+    OuterLoopTrain = 41;
+    OuterLoopController = 61;
+
+Hubs = HubsClass();
+
+# broadcast_channel=Hubs.InnerLoopTrain,
+broadcastChannel=Hubs.OuterLoopTrain;
+# observe_channels=Hubs.InnerLoopController
+observeChannel=Hubs.OuterLoopController
+
+hub = TechnicHub(
+    broadcast_channel=broadcastChannel,
+    observe_channels=[observeChannel]
+)
 sensor = ColorDistanceSensor(Port.B)
 
-train_status = 'stopped';
-hub.light.on(Color.RED)
-prev_train_status = 'stopped'
+hub.light.on(Color.GREEN)
 
-broadcast_msg = None
+DEBUG = True;
 
-async def handle_broadcast():
-    global broadcast_msg;
-    prev_broadcast_msg = None;
-    timer = StopWatch();
+# train_status = TrainStatus.Stopped;
+# distanceTimer = StopWatch();
+broadcastTimer = StopWatch();
+isBroadcasting = False;
+loopTimer = StopWatch();
+prevReceived = None;
+trainMoving = False;
+trainStarting = False;
+lightOff = False;
 
-    while True:
-        if broadcast_msg != None:
-            prev_broadcast_msg = broadcast_msg;
-            await hub.ble.broadcast(broadcast_msg);
-            broadcast_msg = None;
-            timer.reset();
-            timer.resume();
-        elif timer.time() > 5000:
-            await hub.ble.broadcast(None);
-            timer.pause();
-            timer.reset();
-                
-        await wait(100);
+n = 0;
+while True:
+    loopTimer.reset();
+    # if DEBUG:
+    #     n = n + 1;
+    #     print('In loop', n);
 
+    if isBroadcasting and broadcastTimer.time() > 3000:
+        # if DEBUG:
+        print('Finished broadcasting');
+        isBroadcasting = False;
+        # wait(30);
+        hub.ble.broadcast(2);
+        # wait(110);
+        broadcastTimer.pause();
+        hub.light.on(Color.GREEN);
 
-async def detect_distance():
-    global train_status;
-    global broadcast_msg;
-    timer = StopWatch();
+    wait(30);
+    data = hub.ble.observe(observeChannel);
 
-    while True:
-        if timer.time() < 10000:
-            await wait(50);
-            continue;
+    # print(hub.ble.signal_strength(Hubs.InnerLoopController));
 
-        if train_status == 'stopped':
-            distance = await sensor.distance();
-            if distance < 80:
-                await sensor.light.off();
-                broadcast_msg = 'start';
-                train_status = 'starting'
-                timer.reset();
-                hub.light.on(Color.YELLOW)
+    # if DEBUG and data != None and data != prevReceived:
+    # print('Received', data);
+    #     prevReceived = data;
 
-        elif train_status == 'starting':
-            if timer.time() > 10000:
-                train_status = 'stopped';
-                hub.light.on(Color.RED);
-        
-        await wait(200);
+    if data is not None and prevReceived != data:
+        print('Received', data);
+        if data == 1 and not trainMoving:
+            trainMoving = True;
+            trainStarting = False;
+            hub.light.on(Color.GREEN);
+            # if DEBUG:
+            print('Train running');
+        elif data == 0 and trainMoving:# and not trainStarting:
+        # elif data == Messages.Stopped and train_status != TrainStatus.Stopped:
+            trainMoving = False;
+            hub.light.on(Color.RED);
+            # if DEBUG:
+            print('Train stopped');
+            # wait(1000);
+    prevReceived = data;
 
-async def handle_msgs():
-    global train_status;
-    timer = StopWatch();
+    # wait(20)
 
-    while True:
-        if timer.time() < 500:
-            await wait(500);
-            continue;
+    # if train_status == TrainStatus.Stopped:
+    if not trainMoving and not isBroadcasting:
+        # if DEBUG:
+        #     print('Not broadcasting so checking distance');
+        distance = sensor.distance();
+        lightOff = False;
+        if distance < 80:
+            sensor.light.off();
+            # if DEBUG:
+            print('Broadcast start')
+            # if not isBroadcasting:
+            hub.light.blink(Color.YELLOW,[500,500])
+            isBroadcasting = True;
+            broadcastTimer.reset();
+            broadcastTimer.resume();
+            # wait(30);
+            hub.ble.broadcast(1);
+            # wait(110);
+            # trainStarting = True;
+         
+        # else:
+        #     hub.ble.broadcast(None);
+        #     isBroadcasting = False;
+    elif not lightOff:
+        sensor.light.off();
+        # print('Broadcast none')
+        # hub.ble.broadcast(None);
+        lightOff = True;
+        # wait(30);
+    # else:
+        # wait(30);
 
-        data = hub.ble.observe(2);
+    # elif train_status == TrainStatus.Starting and distanceTimer.time() > 10000:
+    # elif broadcastTimer.time() > 10000 and trainStarting:
+    #     # train_status = TrainStatus.Stopped;
+    #     trainMoving = False
+    #     # hub.light.on(Color.RED)
+    #     broadcastTimer.pause()
+    #     hub.light.on(Color.YELLOW);
+    #     if DEBUG:
+    #         print('Starting timed out');
+    # elif DEBUG:
+    #     print('Waiting');
 
-        if data is not None:
-            timer.reset();
-            if data == 'running' and train_status != 'running':
-                train_status = 'running'
-                hub.light.on(Color.GREEN)
-            elif data == 'stopped' and train_status != 'stopped' and train_status != 'starting':
-                train_status = 'stopped'
-                hub.light.on(Color.RED)
-        
-        await wait(100);
+    # elif distanceTimer.time() > 30000:
+    #     train_status = TrainStatus.Stopped;
+    #     distanceTimer.pause();
+    #     if DEBUG:
+    #         print('Timed out waiting for train to stop');
+    
+    t = 20 - loopTimer.time();
+    if t > 0:
+        # print('Wait extra', t)
+        wait(t)
 
-async def main():
-    await multitask(handle_msgs(), detect_distance(), handle_broadcast())
-
-run_task(main())
