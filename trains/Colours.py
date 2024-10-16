@@ -19,7 +19,7 @@ def get_colour(sensor):
         return HSVColor.GREY;
     elif color.v > 55 and color.h > 210 and color.h < 230 and color.s > 90:
         return HSVColor.BLUE;
-    elif color.v > 55 and color.h > 210 and color.h < 220 and color.s > 80:
+    elif color.v > 55 and color.h > 207 and color.h < 220 and color.s > 80:
         return HSVColor.MEDIUMBLUE;
     elif color.v > 55 and color.h > 350 and color.h < 360:
         return HSVColor.RED;
