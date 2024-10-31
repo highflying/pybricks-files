@@ -6,8 +6,8 @@ from Channels import Channels
 from Messages import Messages
 from Colours import HSVColor, get_colour
 
-isGoods = False;
-isPassenger = False;
+isGoods = False
+isPassenger = False
 
 # def get_colour(sensor):
 #     color = sensor.hsv();
@@ -38,29 +38,26 @@ hub = CityHub()
 fast_power = 55
 slow_power = 35
 
-if hub.system.name() == 'Autocoach Hub':
+if hub.system.name() == "Autocoach Hub":
     broadcastChannel = Channels.InnerLoopController
     observeChannel = Channels.InnerLoopTrain
-    isPassenger = True;
+    isPassenger = True
     fast_power = -80
     slow_power = -55
-elif hub.system.name() == 'Tram Hub':
+elif hub.system.name() == "Tram Hub":
     broadcastChannel = Channels.InnerLoopController
     observeChannel = Channels.InnerLoopTrain
-    isGoods = True;
+    isGoods = True
     fast_power = -60
     slow_power = -58
-elif hub.system.name() == 'White Coach Hub':
+elif hub.system.name() == "White Coach Hub":
     broadcastChannel = Channels.OuterLoopController
     observeChannel = Channels.OuterLoopTrain
-    isPassenger = True;
+    isPassenger = True
     fast_power = 100
     slow_power = 100
 
-hub = CityHub(
-    broadcast_channel=broadcastChannel,
-    observe_channels=[observeChannel]
-)
+hub = CityHub(broadcast_channel=broadcastChannel, observe_channels=[observeChannel])
 
 motor = DCMotor(Port.A)
 sensor = ColorDistanceSensor(Port.B)
@@ -79,6 +76,7 @@ leftSiding = False
 slowGoods = True
 prevReceived = None
 
+
 def reverseTrain():
     global current_power, leftSiding, reversing
 
@@ -94,8 +92,9 @@ def reverseTrain():
         elif isGoods and leftSiding:
             leftSiding = False
 
+
 def stopTrain():
-    global current_power, reversing, isBroadcasting;
+    global current_power, reversing, isBroadcasting
 
     if current_power != 0:
         motor.stop()
@@ -106,8 +105,9 @@ def stopTrain():
         broadcastTimer.reset()
         broadcastTimer.resume()
 
+
 def slowTrain():
-    global current_power;
+    global current_power
 
     if abs(current_power) > abs(slow_power):
         if leftSiding:
@@ -116,8 +116,9 @@ def slowTrain():
             motor.dc(slow_power)
             current_power = slow_power
 
+
 def startTrain():
-    global current_power, leftSiding, isBroadcasting;
+    global current_power, leftSiding, isBroadcasting
 
     if current_power == 0:
         current_power = fast_power
@@ -134,10 +135,11 @@ def startTrain():
         motor.stop()
         current_power = 0
 
-loopTimer = StopWatch();
+
+loopTimer = StopWatch()
 
 while True:
-    loopTimer.reset();
+    loopTimer.reset()
 
     # if isBroadcasting and broadcastTimer.time() > 3000:
     #     # if DEBUG:
@@ -159,34 +161,33 @@ while True:
 
         if got_color == HSVColor.MEDIUMBLUE:
             colourTimer.reset()
-            print('mediumblue')
+            print("mediumblue")
 
             if isPassenger:
                 stopTrain()
             elif isGoods:
                 if reversing:
-                    print('stop')
+                    print("stop")
                     stopTrain()
                 elif current_power != 0:
-                    print('slow')
+                    print("slow")
                     slowTrain()
 
         elif isPassenger and got_color == HSVColor.TEAL:
-            print('teal')
+            print("teal")
             colourTimer.reset()
             slowTrain()
 
         elif isGoods and got_color == HSVColor.TEAL:
-            print('teal')
+            print("teal")
             colourTimer.reset()
             if leftSiding:
-                print('leftsiding')
+                print("leftsiding")
                 leftSiding = False
             elif current_power == slow_power:
-                print('reverse')
+                print("reverse")
                 reverseTrain()
 
-    t = 10 - loopTimer.time();
+    t = 10 - loopTimer.time()
     if t > 0:
         wait(t)
-

@@ -13,7 +13,7 @@ try:
     sensor = ColorDistanceSensor(Port.B)
     sensor.light.off()
 except:
-    print('Sensor not found')
+    print("Sensor not found")
 
 while True:
     pressed = remote.buttons.pressed()
@@ -29,9 +29,9 @@ while True:
             power = power - 10
             motor.dc(power)
             wait(500)
-    
+
     elif Button.LEFT in pressed:
         power = 0
         motor.stop()
-    
+
     wait(10)

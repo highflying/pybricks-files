@@ -27,7 +27,7 @@ while True:
         if DEBUG:
             print("Finished broadcasting")
 
-        hub.ble.broadcast(None)
+        hub.ble.broadcast(None)  # type: ignore
         isBroadcasting = False
         broadcastTimer.pause()
 

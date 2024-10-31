@@ -1,6 +1,3 @@
-from pybricks.tools import wait
-
-
 def ramp_power(motor, fromPower, toPower, ms=250):
     motor.dc(toPower)
     # p = fromPower;

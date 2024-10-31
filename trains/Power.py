@@ -1,7 +1,5 @@
-from pybricks.tools import wait
-
-def ramp_power(motor, fromPower, toPower, ms = 250):
-    motor.dc(toPower);
+def ramp_power(motor, fromPower, toPower, ms=250):
+    motor.dc(toPower)
     # p = fromPower;
     # if p == 0:
     #     p = 10;
@@ -13,5 +11,5 @@ def ramp_power(motor, fromPower, toPower, ms = 250):
     #     p = p + mult;
     #     motor.dc(p);
     #     wait(ms);
-    
-    return;
+
+    return

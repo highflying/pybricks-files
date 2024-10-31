@@ -1,8 +1,7 @@
 from pybricks.hubs import CityHub
-from pybricks.pupdevices import DCMotor, Light, ColorDistanceSensor
+from pybricks.pupdevices import DCMotor, ColorDistanceSensor
 from pybricks.parameters import Color, Port
-from pybricks.robotics import DriveBase
-from pybricks.tools import wait, StopWatch
+from pybricks.tools import wait
 from Colours import HSVColor, get_colour
 from Power import ramp_power
 
