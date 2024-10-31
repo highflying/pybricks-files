@@ -6,6 +6,7 @@ from Channels import Channels
 
 hub = TechnicHub(
     broadcast_channel=Channels.InnerLoopTrain,
+    # observe_channels=[Hubs.InnerLoopController]
 )
 sensor = ColorDistanceSensor(Port.B)
 
@@ -37,6 +38,8 @@ while True:
         if distance < 80:
             codeTimer.reset()
             sensor.light.off()
+            # if DEBUG:
+            #     print('Broadcast start');
             if prevColor == "blue":
                 hub.light.on(Color.RED)
                 hub.ble.broadcast(0)

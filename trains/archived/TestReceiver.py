@@ -5,7 +5,11 @@ from pybricks.tools import wait, StopWatch
 from Colours import HSVColor, get_colour
 from Channels import Channels
 
-hub = CityHub(observe_channels=[Channels.InnerLoopTrain])
+
+hub = CityHub(
+    # broadcast_channel=Hubs.InnerLoopController,
+    observe_channels=[Channels.InnerLoopTrain]
+)
 
 motor = DCMotor(Port.A)
 sensor = ColorDistanceSensor(Port.B)
