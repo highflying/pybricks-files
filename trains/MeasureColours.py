@@ -16,8 +16,10 @@ while True:
     colourName = get_colour(sensor)
     print(got_color)
 
-    if colourName == "teal" or colourName == "mediumblue":
-        print(got_color)
+    # if colourName == "teal" or colourName == "mediumblue":
+    if colourName != "none":
+        # print(got_color)
+
         print(colourName)
 
     wait(500)

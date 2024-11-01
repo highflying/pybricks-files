@@ -1,6 +1,3 @@
-class TrainTypeClass:
+class TrainType:
     Passenger = "passenger"
     Goods = "goods"
-
-
-TrainType = TrainTypeClass()

@@ -1,193 +1,90 @@
-from pybricks.hubs import CityHub
-from pybricks.pupdevices import DCMotor, ColorDistanceSensor
-from pybricks.parameters import Color, Port
 from pybricks.tools import wait, StopWatch
-from Channels import Channels
 from Messages import Messages
-from Colours import HSVColor, get_colour
+from Colours import HSVColor
+from TrainHub import TrainHub
+from pybricks.parameters import Color
 
-isGoods = False
-isPassenger = False
-
-# def get_colour(sensor):
-#     color = sensor.hsv();
-#     if color.v > 60:
-#         # print(color);
-#         if color.h > 200 and color.h < 230 and color.s > 30 and color.s< 40:
-#             return 'grey';
-#         elif color.h > 210 and color.h < 230 and color.s > 90:
-#             return 'blue';
-#         elif color.h > 210 and color.h < 220 and color.s > 80:
-#             return 'mediumblue';
-#         elif color.h > 350 and color.h < 360:
-#             return 'red';
-#         elif color.h > 50 and color.h < 60:
-#             return 'yellow';
-#         elif color.h > 180 and color.h < 190:
-#             return 'teal';
-#         elif color.h > 130 and color.h < 140:
-#             return 'green';
-
-#     return 'none';
-
-broadcastChannel = Channels.OuterLoopController
-observeChannel = Channels.OuterLoopTrain
-
-hub = CityHub()
-
-fast_power = 55
-slow_power = 35
-
-if hub.system.name() == "Autocoach Hub":
-    broadcastChannel = Channels.InnerLoopController
-    observeChannel = Channels.InnerLoopTrain
-    isPassenger = True
-    fast_power = -80
-    slow_power = -55
-elif hub.system.name() == "Tram Hub":
-    broadcastChannel = Channels.InnerLoopController
-    observeChannel = Channels.InnerLoopTrain
-    isGoods = True
-    fast_power = -60
-    slow_power = -58
-elif hub.system.name() == "White Coach Hub":
-    broadcastChannel = Channels.OuterLoopController
-    observeChannel = Channels.OuterLoopTrain
-    isPassenger = True
-    fast_power = 100
-    slow_power = 100
-
-hub = CityHub(broadcast_channel=broadcastChannel, observe_channels=[observeChannel])
-
-motor = DCMotor(Port.A)
-sensor = ColorDistanceSensor(Port.B)
-
-hub.light.on(Color.GREEN)
-hub.ble.broadcast(Messages.Stopped)
+train = TrainHub()
 
 DEBUG = False
+PAUSE_AFTER_START = 3000
+COLOUR_INTERVAL = 1000
+STOP_COLOUR = HSVColor.MEDIUMBLUE
+SLOW_COLOUR = HSVColor.TEAL
+FAST_COLOUR = HSVColor.RED
+MIN_LOOP_INTERVAL = 10
 
-current_power = 0
-colourTimer = StopWatch()
-broadcastTimer = StopWatch()
-isBroadcasting = False
-reversing = False
-leftSiding = False
-slowGoods = True
-prevReceived = None
-
-
-def reverseTrain():
-    global current_power, leftSiding, reversing
-
-    if current_power != 0:
-        if isPassenger or (isGoods and not leftSiding):
-            motor.stop()
-            current_power = 0
-            wait(1000)
-
-            motor.dc(slow_power * -1)
-            current_power = slow_power * -1
-            reversing = True
-        elif isGoods and leftSiding:
-            leftSiding = False
-
-
-def stopTrain():
-    global current_power, reversing, isBroadcasting
-
-    if current_power != 0:
-        motor.stop()
-        current_power = 0
-        reversing = False
-        isBroadcasting = True
-        hub.ble.broadcast(Messages.Stopped)
-        broadcastTimer.reset()
-        broadcastTimer.resume()
-
-
-def slowTrain():
-    global current_power
-
-    if abs(current_power) > abs(slow_power):
-        if leftSiding:
-            pass
-        else:
-            motor.dc(slow_power)
-            current_power = slow_power
-
-
-def startTrain():
-    global current_power, leftSiding, isBroadcasting
-
-    if current_power == 0:
-        current_power = fast_power
-        motor.dc(fast_power)
-        isBroadcasting = True
-        broadcastTimer.reset()
-        broadcastTimer.resume()
-        hub.ble.broadcast(Messages.Running)
-        wait(10000)
-
-        if isGoods:
-            leftSiding = True
-    else:
-        motor.stop()
-        current_power = 0
-
-
-loopTimer = StopWatch()
+colour_timer = StopWatch()
+loop_timer = StopWatch()
+left_siding = False
 
 while True:
-    loopTimer.reset()
+    loop_timer.reset()
 
-    # if isBroadcasting and broadcastTimer.time() > 3000:
-    #     # if DEBUG:
-    #     print('Finished broadcasting')
-    #     # wait(30)
-    #     hub.ble.broadcast(2)
-    #     # wait(110)
-    #     isBroadcasting = False
-    #     broadcastTimer.pause()
+    data = train.observe()
 
-    data = hub.ble.observe(observeChannel)
+    if train.is_stopped() and data == Messages.Start:
+        train.light(Color.YELLOW)
+        train.fast()
+        wait(PAUSE_AFTER_START)
+        train.light(Color.GREEN)
 
-    if current_power == 0:
-        if data == Messages.Start:
-            startTrain()
+        if train.is_goods():
+            left_siding = True
 
-    if current_power != 0 and colourTimer.time() > 1000:
-        got_color = get_colour(sensor)
+    elif not train.is_stopped() and colour_timer.time() > COLOUR_INTERVAL:
+        got_color = train.get_colour()
 
-        if got_color == HSVColor.MEDIUMBLUE:
-            colourTimer.reset()
-            print("mediumblue")
+        if got_color == STOP_COLOUR:
+            colour_timer.reset()
+            if DEBUG:
+                print(got_color)
 
-            if isPassenger:
-                stopTrain()
-            elif isGoods:
-                if reversing:
+            if train.is_passenger():
+                if DEBUG:
                     print("stop")
-                    stopTrain()
-                elif current_power != 0:
+                train.stop()
+            elif train.is_goods():
+                if DEBUG:
+                    print("stop")
+
+                # train.stop()
+                # train.light(Color.RED)
+                if train.is_reversing():
+                    if DEBUG:
+                        print("stop")
+                    train.stop()
+                elif not left_siding:
+                    if DEBUG:
+                        print("slow")
+                    train.slow()
+
+        elif got_color == SLOW_COLOUR:
+            if DEBUG:
+                print(got_color)
+            colour_timer.reset()
+
+            if train.is_passenger():
+                if DEBUG:
                     print("slow")
-                    slowTrain()
+                train.slow()
+            elif train.is_goods():
+                if left_siding:
+                    if DEBUG:
+                        print("leftsiding")
+                    left_siding = False
+                elif train.is_slow():
+                    if DEBUG:
+                        print("stop and reverse")
+                    train.stop_and_reverse()
 
-        elif isPassenger and got_color == HSVColor.TEAL:
-            print("teal")
-            colourTimer.reset()
-            slowTrain()
+        elif got_color == FAST_COLOUR:
+            if DEBUG:
+                print(got_color)
 
-        elif isGoods and got_color == HSVColor.TEAL:
-            print("teal")
-            colourTimer.reset()
-            if leftSiding:
-                print("leftsiding")
-                leftSiding = False
-            elif current_power == slow_power:
-                print("reverse")
-                reverseTrain()
+            train.fast()
 
-    t = 10 - loopTimer.time()
-    if t > 0:
-        wait(t)
+    # t = MIN_LOOP_INTERVAL - loop_timer.time()
+    # if t > 0:
+    #     wait(t)
+    wait(1)

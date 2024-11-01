@@ -1,73 +1,38 @@
-from pybricks.hubs import TechnicHub
-from pybricks.parameters import Color, Port
+from pybricks.parameters import Color
 from pybricks.tools import wait, StopWatch
-from pybricks.pupdevices import ColorDistanceSensor
-from Channels import Channels
 from Messages import Messages
-
-broadcastChannel = Channels.InnerLoopTrain
-observeChannel = Channels.InnerLoopController
-
-hub = TechnicHub()
-
-if hub.system.name() == "Outer Loop Cont":
-    broadcastChannel = Channels.OuterLoopTrain
-    observeChannel = Channels.OuterLoopController
-elif hub.system.name() == "Controller Hub":
-    broadcastChannel = Channels.InnerLoopTrain
-    observeChannel = Channels.InnerLoopController
-
-hub = TechnicHub(broadcast_channel=broadcastChannel, observe_channels=[observeChannel])
-
-sensor = ColorDistanceSensor(Port.D)
-
-hub.light.on(Color.GREEN)
+from ControllerHub import ControllerHub
 
 DEBUG = False
+MIN_LOOP_INTERVAL = 1
 
-broadcastTimer = StopWatch()
-isBroadcasting = False
-loopTimer = StopWatch()
-prevReceived = None
-trainMoving = False
-lightOff = False
+loop_timer = StopWatch()
+train_moving = False
+
+controller = ControllerHub()
+controller.light(Color.GREEN)
 
 while True:
-    loopTimer.reset()
+    loop_timer.reset()
 
-    if isBroadcasting and broadcastTimer.time() > 3000:
-        isBroadcasting = False
-        hub.ble.broadcast(Messages.Ping)
-        broadcastTimer.pause()
-        hub.light.on(Color.GREEN)
+    data = controller.observe()
 
-    data = hub.ble.observe(observeChannel)
+    if data is not None:
+        print(data)
+        if data == Messages.Running and not train_moving:
+            train_moving = True
+            controller.light(Color.GREEN)
+            controller.stop_broadcasting()
+        elif data == Messages.Stopped and train_moving:
+            train_moving = False
+            controller.light(Color.RED)
 
-    if data is not None and prevReceived != data:
-        if data == Messages.Running and not trainMoving:
-            trainMoving = True
-            hub.light.on(Color.GREEN)
-        elif data == Messages.Stopped and trainMoving:
-            trainMoving = False
-            hub.light.on(Color.RED)
-
-    prevReceived = data
-
-    if not trainMoving and not isBroadcasting:
-        distance = sensor.distance()
-        lightOff = False
-        if distance < 80:
-            sensor.light.off()
-            hub.light.on(Color.YELLOW)
-            isBroadcasting = True
-            broadcastTimer.reset()
-            broadcastTimer.resume()
-            hub.ble.broadcast(Messages.Start)
-    elif not lightOff:
-        sensor.light.off()
-        lightOff = True
+    if train_moving or controller.is_broadcasting:
+        controller.sensor_off()
+    elif controller.is_sensor_triggered():
+        controller.broadcast(Messages.Start)
 
     # consider having a longer wait when only pinging and waiting for a response?
-    t = 50 - loopTimer.time()
+    t = MIN_LOOP_INTERVAL - loop_timer.time()
     if t > 0:
         wait(t)

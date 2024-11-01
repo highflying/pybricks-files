@@ -1,7 +1,4 @@
-class TrainStatusClass:
+class TrainStatus:
     Stopped = "stopped"
     Starting = "starting"
     Running = "running"
-
-
-TrainStatus = TrainStatusClass()
