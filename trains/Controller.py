@@ -7,6 +7,7 @@ DEBUG = False
 MIN_LOOP_INTERVAL = 1
 
 loop_timer = StopWatch()
+timeout_timer = StopWatch()
 train_moving = False
 
 controller = ControllerHub()
@@ -31,6 +32,10 @@ while True:
         controller.sensor_off()
     elif controller.is_sensor_triggered():
         controller.broadcast(Messages.Start)
+
+    if timeout_timer.time() > 30000:
+        train_moving = False
+        controller.light(Color.RED)
 
     # consider having a longer wait when only pinging and waiting for a response?
     t = MIN_LOOP_INTERVAL - loop_timer.time()

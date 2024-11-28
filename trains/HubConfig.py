@@ -12,7 +12,7 @@ class HubConfig:
 
 
 class OuterLoopController(HubConfig):
-    name = "Outer Loop Controller"
+    name = "Outer Loop Cont"
     broadcast_channel = Channels.OuterLoopController
     observe_channel = Channels.OuterLoopTrain
 
@@ -27,8 +27,8 @@ class Autocoach(HubConfig):
     name = "Autocoach Hub"
     broadcast_channel = Channels.InnerLoopTrain
     observe_channel = Channels.InnerLoopController
-    fast_power = -80
-    slow_power = -55
+    fast_power = -60
+    slow_power = -40
 
 
 class Tram(HubConfig):
@@ -36,16 +36,16 @@ class Tram(HubConfig):
     broadcast_channel = Channels.InnerLoopTrain
     observe_channel = Channels.InnerLoopController
     train_type = TrainType.Goods
-    fast_power = -60
-    slow_power = -58
+    fast_power = -55
+    slow_power = -50
 
 
 class WhiteCoach(HubConfig):
     name = "White Coach Hub"
     broadcast_channel = Channels.OuterLoopTrain
     observe_channel = Channels.OuterLoopController
-    fast_power = 100
-    slow_power = 100
+    fast_power = 85
+    slow_power = 50
 
 
 def get_hub_config(name: str):

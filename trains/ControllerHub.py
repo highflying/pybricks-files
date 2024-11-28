@@ -5,7 +5,7 @@ from pybricks.parameters import Color
 from DistanceSensor import DistanceSensor
 from Messages import Messages
 
-BROADCAST_INTERVAL = 3000
+BROADCAST_INTERVAL = 5000
 
 
 class ControllerHub:
