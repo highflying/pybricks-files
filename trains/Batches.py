@@ -2,7 +2,7 @@ import Constants
 import Cmds
 import Colours
 
-InnerLoopBatch = [
+InnerLoop = [
     [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
     [Cmds.FastTrain],
     [Cmds.WaitForColour, Colours.TEAL],
@@ -14,7 +14,7 @@ InnerLoopBatch = [
     [Cmds.AddBatch, "InnerLoop"],
 ]
 
-InnerSidingBatch = [
+InnerSiding = [
     [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
     [Cmds.FastTrain],
     [Cmds.WaitForColour, Colours.TEAL],
@@ -33,7 +33,7 @@ InnerSidingBatch = [
     [Cmds.AddBatch, "InnerSiding"],
 ]
 
-OuterLoopBatch = [
+OuterLoop = [
     [Cmds.WaitMsg, Constants.Channel_OuterCont, Constants.Msg_Start],
     [Cmds.FastTrain],
     [Cmds.WaitForColour, Colours.TEAL],
@@ -44,14 +44,14 @@ OuterLoopBatch = [
     [Cmds.AddBatch, "OuterLoop"],
 ]
 
-KMStartBatch = [
+KMStart = [
     [Cmds.WaitMsg, Constants.Msg_KMArrive],
     [Cmds.StartEmit, Constants.Msg_KMDepart],
     [Cmds.FastTrain],
     [Cmds.AddBatch, "HIToBN"],
 ]
 
-KMBatch = [
+KM = [
     [Cmds.WaitForColour, Colours.SC_KM],
     [Cmds.StartEmit, Constants.Msg_KMArrive],
     [Cmds.WaitForColour, Colours.SC_KM],
@@ -67,9 +67,7 @@ KMBatch = [
     [Cmds.AddBatch, "HIToBN"],
 ]
 
-# HIToKMBatch = [[Cmds.AddBatch, "KM"]]
-
-HIToBNBatch = [
+HIToBN = [
     [Cmds.WaitForColour, Colours.SC_HIToKM],
     [Cmds.SlowTrain],
     [Cmds.WaitForColour, Colours.SC_HIToBN],
@@ -82,7 +80,7 @@ HIToBNBatch = [
     [Cmds.AddBatch, "BN"],
 ]
 
-HIToBNStartBatch = [
+HIToBNStart = [
     [Cmds.StartEmit, Constants.Msg_HIArrive],
     [Cmds.WaitMsg, Constants.Msg_HIDepart],
     [Cmds.StopEmit],
@@ -91,7 +89,7 @@ HIToBNStartBatch = [
     [Cmds.AddBatch, "BN"],
 ]
 
-HIToKMBatch = [
+HIToKM = [
     [Cmds.WaitForColour, Colours.SC_HIToBN],
     [Cmds.SlowTrain],
     [Cmds.WaitForColour, Colours.SC_HIToKM],
@@ -104,7 +102,7 @@ HIToKMBatch = [
     [Cmds.AddBatch, "KM"],
 ]
 
-HIToKMStartBatch = [
+HIToKMStart = [
     [Cmds.StartEmit, Constants.Msg_HIArrive],
     [Cmds.WaitMsg, Constants.Msg_HIDepart],
     [Cmds.StopEmit],
@@ -113,9 +111,7 @@ HIToKMStartBatch = [
     [Cmds.AddBatch, "KM"],
 ]
 
-# HIToBNBatch = [[Cmds.AddBatch, "BN"]]
-
-BNBatch = [
+BN = [
     [Cmds.WaitForColour, Colours.SC_BN],
     [Cmds.StartEmit, Constants.Msg_BNArrive],
     [Cmds.WaitForColour, Colours.SC_BN],
@@ -131,7 +127,7 @@ BNBatch = [
     [Cmds.AddBatch, "HIToKM"],
 ]
 
-BNStartBatch = [
+BNStart = [
     [Cmds.WaitMsg, Constants.Msg_BNArrive],
     [Cmds.StartEmit, Constants.Msg_BNDepart],
     [Cmds.FastTrain],

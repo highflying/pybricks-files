@@ -3,11 +3,11 @@ from pybricks.hubs import TechnicHub
 import HubConfig
 from pybricks.parameters import Port
 from pybricks.pupdevices import ColorDistanceSensor
-from DistanceSensor import DistanceSensor
 import Colours
 import Constants
 
 BROADCAST_INTERVAL = 5000
+DETECT_DISTANCE = 80
 
 
 def wait_for_colour(sensor):
@@ -38,6 +38,7 @@ def get_config():
 class ControllerHub:
     is_broadcasting = False
     previous_received = None
+    sensor_off = False
 
     def __init__(self):
         self.hub_config = get_config()
@@ -49,7 +50,7 @@ class ControllerHub:
         self.hub.light.on(self.hub_config[HubConfig.HC_COLOUR])
 
         self.broadcast_timer = StopWatch()
-        self.sensor = DistanceSensor()
+        self.sensor = ColorDistanceSensor(Port.D)
 
     def broadcast(self, message) -> None:
         self.is_broadcasting = True
@@ -83,8 +84,19 @@ class ControllerHub:
 
         return list(messages)
 
-    def sensor_off(self) -> None:
-        self.sensor.off()
+    def turn_sensor_off(self) -> None:
+        if self.sensor_off:
+            return
+
+        self.sensor.light.off()
+        self.sensor_off = True
 
     def is_sensor_triggered(self) -> bool:
-        return self.sensor.is_triggered()
+        self.sensor_off = False
+        distance = self.sensor.distance()
+
+        if distance < DETECT_DISTANCE:
+            self.turn_sensor_off()
+            return True
+
+        return False
