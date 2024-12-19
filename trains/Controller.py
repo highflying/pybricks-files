@@ -5,8 +5,7 @@ from micropython import mem_info
 
 print(mem_info())
 
-DEBUG = False
-MIN_LOOP_INTERVAL = 1
+_MIN_LOOP_INTERVAL = 1
 
 loop_timer = StopWatch()
 timeout_timer = StopWatch()
@@ -39,6 +38,6 @@ while True:
         train_moving = False
 
     # consider having a longer wait when only pinging and waiting for a response?
-    t = MIN_LOOP_INTERVAL - loop_timer.time()
+    t = _MIN_LOOP_INTERVAL - loop_timer.time()
     if t > 0:
         wait(t)
