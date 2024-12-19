@@ -1,11 +1,11 @@
-GREY = 1
-BLUE = 2
-RED = 3
-YELLOW = 4
-TEAL = 5
-GREEN = 6
-NONE = 7
-MEDIUMBLUE = 8
+GREY = "Grey"
+BLUE = "Blue"
+RED = "Red"
+YELLOW = "Yellow"
+TEAL = "Teal"
+GREEN = "Green"
+NONE = "None"
+MEDIUMBLUE = "MedBlue"
 
 
 def get_colour(sensor):

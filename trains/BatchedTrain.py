@@ -1,13 +1,15 @@
-from pybricks.tools import wait
+from pybricks.tools import wait, StopWatch
 import Cmds
 from TrainHub import TrainHub
 import Batches
 import Colours
 from micropython import mem_info
+from pybricks.parameters import Color
 
 print(mem_info())
 
 train = TrainHub()
+_MIN_LOOP_INTERVAL = 50
 
 
 def wait_for_colour(train):
@@ -23,22 +25,25 @@ def wait_for_colour(train):
 def init_batch(train):
     colour_code = wait_for_colour(train)
     if colour_code == Colours.SC_KM:
-        print("km")
+        train.light(Color.BLUE)
         return Batches.get_batch(Batches.KMSTART)
     elif colour_code == Colours.SC_BN:
-        print("bn")
+        train.light(Color.GREEN)
         return Batches.get_batch(Batches.BNSTART)
     elif colour_code == Colours.SC_HIToBN:
-        print("hitobn")
+        train.light(Color.RED)
         return Batches.get_batch(Batches.HITOBNSTART)
 
-    print("hitokm")
+    train.light(Color.YELLOW)
     return Batches.get_batch(Batches.HITOKMSTART)
 
 
 batch = init_batch(train)
+loop_timer = StopWatch()
 
 while True:
+    loop_timer.reset()
+
     train.perform_regular_checks()
 
     cmd = batch.pop(0)
@@ -49,13 +54,22 @@ while True:
             data = train.observe()
             if len(data) > 0 and data.count(cmd[1]) > 0:
                 break
-            wait(5)
+            wait(50)
 
     elif cmd[0] == Cmds.WaitForColour:
         while True:
             if train.get_colour() == cmd[1]:
+                if cmd[1] == Colours.BLUE:
+                    train.light(Color.BLUE)
+                elif cmd[1] == Colours.RED:
+                    train.light(Color.RED)
+                elif cmd[1] == Colours.YELLOW:
+                    train.light(Color.YELLOW)
+                elif cmd[1] == Colours.GREEN:
+                    train.light(Color.GREEN)
+                wait(50)
                 break
-            wait(5)
+            wait(10)
 
     elif cmd[0] == Cmds.FastTrain:
         train.fast()
@@ -81,4 +95,6 @@ while True:
     elif cmd[0] == Cmds.AddBatch:
         batch += Batches.get_batch(cmd[1])
 
-    wait(1)
+    t = _MIN_LOOP_INTERVAL - loop_timer.time()
+    if t > 0:
+        wait(t)
