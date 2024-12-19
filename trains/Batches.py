@@ -1,7 +1,6 @@
 import Constants
 import Cmds
 import Colours
-from micropython import const
 
 InnerLoopBatch = [
     [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
