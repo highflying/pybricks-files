@@ -1,12 +1,10 @@
-import HubConfig
-from pybricks.parameters import Button, Port, Color
+from pybricks.parameters import Button, Port
 from pybricks.pupdevices import Remote, DCMotor, ColorDistanceSensor
 from pybricks.iodevices import PUPDevice
 from pybricks.tools import StopWatch, wait
 from uerrno import ENODEV
 import Constants
 import Colours
-import Batches
 
 _MIN_BUTTON_INTERVAL = 1000
 _DETECT_DISTANCE = 80
@@ -23,15 +21,15 @@ def get_device_id(port):
             raise
 
 
-def wait_for_colour(sensor):
-    while True:
-        colour = Colours.get_colour(sensor)
+# def wait_for_colour(sensor):
+#     while True:
+#         colour = Colours.get_colour(sensor)
 
-        if colour != Colours.NONE:
-            print(colour)
-            return colour
+#         if colour != Colours.NONE:
+#             print(colour)
+#             return colour
 
-        wait(100)
+#         wait(100)
 
 
 def get_devices():
@@ -57,20 +55,20 @@ def get_devices():
     return sensors, motors
 
 
-def get_init_batch(train):
-    colour_code = wait_for_colour(train.sensor)
-    if colour_code == Colours.SC_KM:
-        train.light(Color.BLUE)
-        return Batches.get_batch(Batches.KMSTART)
-    elif colour_code == Colours.SC_BN:
-        train.light(Color.GREEN)
-        return Batches.get_batch(Batches.BNSTART)
-    elif colour_code == Colours.SC_HIToBN:
-        train.light(Color.RED)
-        return Batches.get_batch(Batches.HITOBNSTART)
+# def get_init_batch(train):
+#     colour_code = wait_for_colour(train.sensor)
+#     if colour_code == Colours.SC_KM:
+#         train.light(Color.BLUE)
+#         return Batches.get_batch(Batches.KMSTART)
+#     elif colour_code == Colours.SC_BN:
+#         train.light(Color.GREEN)
+#         return Batches.get_batch(Batches.BNSTART)
+#     elif colour_code == Colours.SC_HIToBN:
+#         train.light(Color.RED)
+#         return Batches.get_batch(Batches.HITOBNSTART)
 
-    train.light(Color.YELLOW)
-    return Batches.get_batch(Batches.HITOKMSTART)
+#     train.light(Color.YELLOW)
+#     return Batches.get_batch(Batches.HITOKMSTART)
 
 
 class TrainHub:
@@ -79,7 +77,7 @@ class TrainHub:
     remote = None
     button_timer = None
 
-    def __init__(self):
+    def __init__(self, hub_config):
         try:
             from pybricks.hubs import CityHub
 
@@ -94,17 +92,15 @@ class TrainHub:
         except:
             pass
 
-        hub = hubFunc()
-
-        hubName = hub.system.name()
-
         sensors, motors = get_devices()
 
-        if hubName == "controller":
-            colour_code = wait_for_colour(sensors[0])
-            self.hub_config = HubConfig.get_hub_config_by_colour(colour_code)
-        else:
-            self.hub_config = HubConfig.get_hub_config_by_name(hubName)
+        self.hub_config = hub_config
+
+        # if hubName == "controller":
+        #     colour_code = wait_for_colour(sensors[0])
+        #     self.hub_config = HubConfig.get_hub_config_by_colour(colour_code)
+        # else:
+        #     self.hub_config = HubConfig.get_hub_config_by_name(hubName)
 
         self.hub = hubFunc(
             broadcast_channel=self.hub_config[Constants.HC_BroadcastChannel],
@@ -129,14 +125,14 @@ class TrainHub:
 
         self.light(self.hub_config[Constants.HC_Colour])
 
-    def get_initial_batch(self):
-        if self.hub.system.name() == "controller":
-            if self.hub_config[Constants.HC_InitialBatch] is not None:
-                return Batches.get_batch(self.hub_config[Constants.HC_InitialBatch])
-            else:
-                return []
-        else:
-            return get_init_batch(self)
+    # def get_initial_batch(self):
+    #     if self.hub.system.name() == "controller":
+    #         if self.hub_config[Constants.HC_InitialBatch] is not None:
+    #             return Batches.get_batch(self.hub_config[Constants.HC_InitialBatch])
+    #         else:
+    #             return []
+    #     else:
+    #         return get_init_batch(self)
 
     def perform_regular_checks(self):
         if (
