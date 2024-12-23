@@ -24,3 +24,11 @@ TrainStatus_Running = 3
 
 Direction_KM = "ToKM"
 Direction_BN = "ToBM"
+
+HC_BroadcastChannel = 0
+HC_ObserveChannels = 1
+HC_FastPower = 2
+HC_SlowPower = 3
+HC_RemoteName = 4
+HC_Colour = 5
+HC_InitialBatch = 6
