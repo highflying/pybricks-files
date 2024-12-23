@@ -19,13 +19,14 @@ while True:
     data = controller.observe()
 
     if data is not None:
+        print(data)
         if data == Messages.Running and not train_moving:
             train_moving = True
-            # controller.light(Color.GREEN)
+            controller.light(Color.GREEN)
             controller.stop_broadcasting()
         elif data == Messages.Stopped and train_moving:
             train_moving = False
-            # controller.light(Color.RED)
+            controller.light(Color.RED)
 
     if train_moving or controller.is_broadcasting:
         controller.sensor_off()
@@ -34,7 +35,7 @@ while True:
 
     if timeout_timer.time() > 30000:
         train_moving = False
-        # controller.light(Color.RED)
+        controller.light(Color.RED)
 
     # consider having a longer wait when only pinging and waiting for a response?
     t = MIN_LOOP_INTERVAL - loop_timer.time()
