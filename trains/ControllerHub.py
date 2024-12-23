@@ -1,7 +1,7 @@
 from pybricks.tools import StopWatch, wait
 from pybricks.hubs import TechnicHub
 import HubConfig
-from pybricks.parameters import Port
+from pybricks.parameters import Color, Port
 from pybricks.pupdevices import ColorDistanceSensor
 from DistanceSensor import DistanceSensor
 import Colours

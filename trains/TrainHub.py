@@ -1,6 +1,6 @@
 import HubConfig
 from pybricks.hubs import CityHub
-from pybricks.parameters import Button, Port
+from pybricks.parameters import Color, Button, Port
 from pybricks.pupdevices import Remote, DCMotor, ColorDistanceSensor
 from pybricks.tools import StopWatch
 import Constants
