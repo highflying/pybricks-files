@@ -24,16 +24,16 @@ def init_batch(train):
     colour_code = wait_for_colour(train)
     if colour_code == Colours.SC_KM:
         print("km")
-        return Batches.KMStart
+        return Batches.KMStartBatch
     elif colour_code == Colours.SC_BN:
         print("bn")
-        return Batches.BNStart
+        return Batches.BNStartBatch
     elif colour_code == Colours.SC_HIToBN:
         print("hitobn")
-        return Batches.HIToBNStart
+        return Batches.HIToBNStartBatch
 
     print("hitokm")
-    return Batches.HIToKMStart
+    return Batches.HIToKMStartBatch
 
 
 batch = init_batch(train)
@@ -80,23 +80,23 @@ while True:
 
     elif cmd[0] == Cmds.AddBatch:
         if cmd[1] == "InnerLoop":
-            batch += Batches.InnerLoop
+            batch += Batches.InnerLoopBatch
         elif cmd[1] == "InnerSiding":
-            batch += Batches.InnerSiding
+            batch += Batches.InnerSidingBatch
         elif cmd[1] == "OuterLoop":
-            batch += Batches.OuterLoop
+            batch += Batches.OuterLoopBatch
         elif cmd[1] == "KMStart":
-            batch += Batches.KMStart
+            batch += Batches.KMStartBatch
         elif cmd[1] == "KM":
-            batch += Batches.KM
+            batch += Batches.KMBatch
         elif cmd[1] == "HIToKM":
-            batch += Batches.HIToKM
+            batch += Batches.HIToKMBatch
         elif cmd[1] == "HIToBN":
-            batch += Batches.HIToBN
+            batch += Batches.HIToBNBatch
         elif cmd[1] == "BN":
-            batch += Batches.BN
+            batch += Batches.BNBatch
         elif cmd[1] == "BNStart":
-            batch += Batches.BNStart
+            batch += Batches.BNStartBatch
         else:
             print("Unknown batch", cmd[1])
 
