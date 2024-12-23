@@ -2,9 +2,19 @@ from pybricks.tools import wait, StopWatch
 from Messages import Messages
 from Colours import HSVColor
 from TrainHub import TrainHub
-from pybricks.parameters import Color
+from pybricks.parameters import Color, Button
+from pybricks.pupdevices import Remote
+from Channels import Channels
 
 train = TrainHub()
+
+if train.hub_config.broadcast_channel == Channels.InnerLoopTrain:
+    hub_name = "inner"
+else:
+    hub_name = "outer"
+
+remote = Remote(name=hub_name)
+remote.light.on(Color.GREEN)
 
 DEBUG = False
 PAUSE_AFTER_START = 3000
@@ -16,18 +26,39 @@ MIN_LOOP_INTERVAL = 10
 
 colour_timer = StopWatch()
 loop_timer = StopWatch()
+button_timer = StopWatch()
 left_siding = False
 
 while True:
     loop_timer.reset()
 
+    # data = train.observe()
+
+    pressed = remote.buttons.pressed()
+    if button_timer.time() > 2000:
+        pressed = remote.buttons.pressed()
+
+        if Button.LEFT_PLUS in pressed:
+            train.fast()
+            colour_timer.reset()
+            button_timer.reset()
+
+        elif Button.LEFT_MINUS in pressed:
+            train.slow()
+            colour_timer.reset()
+            button_timer.reset()
+
+        elif Button.LEFT in pressed:
+            train.stop()
+            button_timer.reset()
+
     data = train.observe()
 
     if train.is_stopped() and data == Messages.Start:
-        train.light(Color.YELLOW)
+        # train.light(Color.YELLOW)
         train.fast()
         wait(PAUSE_AFTER_START)
-        train.light(Color.GREEN)
+        # train.light(Color.GREEN)
 
         if train.is_goods():
             left_siding = True
