@@ -1,0 +1,10 @@
+WaitForColour = 5
+WaitMsg = 6
+StartEmit = 7
+StopEmit = 8
+StopTrain = 9
+ToggleDirection = 10
+SlowTrain = 11
+FastTrain = 12
+AddBatch = 13
+Pause = 14
