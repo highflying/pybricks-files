@@ -32,7 +32,7 @@ left_siding = False
 while True:
     loop_timer.reset()
 
-    # data = train.observe()
+    data = train.observe()
 
     pressed = remote.buttons.pressed()
     if button_timer.time() > 2000:
@@ -55,10 +55,10 @@ while True:
     data = train.observe()
 
     if train.is_stopped() and data == Messages.Start:
-        # train.light(Color.YELLOW)
+        train.light(Color.YELLOW)
         train.fast()
         wait(PAUSE_AFTER_START)
-        # train.light(Color.GREEN)
+        train.light(Color.GREEN)
 
         if train.is_goods():
             left_siding = True

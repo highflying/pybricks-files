@@ -1,4 +1,3 @@
 {
-	"python.analysis.typeCheckingMode": "basic",
-	"editor.detectIndentation": false
+	"python.analysis.typeCheckingMode": "basic"
 }
