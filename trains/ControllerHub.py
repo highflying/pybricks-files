@@ -18,21 +18,13 @@ def wait_for_colour(sensor):
             print(colour)
             return colour
 
-        wait(500)
+        wait(100)
 
 
 def get_config():
     sensor = ColorDistanceSensor(Port.D)
     colour_code = wait_for_colour(sensor)
-    if colour_code == Colours.YELLOW:
-        print("hi")
-        return HubConfig.HIController
-    elif colour_code == Colours.RED:
-        print("out")
-        return HubConfig.OuterLoopController
-
-    print("in")
-    return HubConfig.InnerLoopController
+    return HubConfig.get_controller_config(colour_code)
 
 
 class ControllerHub:
