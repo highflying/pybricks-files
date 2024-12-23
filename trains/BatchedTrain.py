@@ -5,6 +5,7 @@ import Batches
 import Colours
 from micropython import mem_info
 from pybricks.parameters import Color
+import Constants
 
 print(mem_info())
 
@@ -54,7 +55,11 @@ while True:
             data = train.observe()
             if len(data) > 0 and data.count(cmd[1]) > 0:
                 break
-            wait(50)
+
+            if train.perform_regular_checks():
+                break
+
+            wait(_MIN_LOOP_INTERVAL)
 
     elif cmd[0] == Cmds.WaitForColour:
         while True:
@@ -67,7 +72,6 @@ while True:
                     train.light(Color.YELLOW)
                 elif cmd[1] == Colours.GREEN:
                     train.light(Color.GREEN)
-                wait(50)
                 break
             wait(10)
 
@@ -86,8 +90,11 @@ while True:
     elif cmd[0] == Cmds.StopEmit:
         train.broadcast(None)
 
-    elif cmd[0] == Cmds.ToggleDirection:
-        train.toggle_direction()
+    elif cmd[0] == Cmds.SetDirection:
+        if cmd[1] == Constants.Direction_BN:
+            train.move_backwards()
+        else:
+            train.move_forward()
 
     elif cmd[0] == Cmds.Pause:
         wait(cmd[1])

@@ -21,3 +21,6 @@ Channel_HIController = 13
 TrainStatus_Stopped = 1
 TrainStatus_Starting = 2
 TrainStatus_Running = 3
+
+Direction_KM = "ToKM"
+Direction_BN = "ToBM"
