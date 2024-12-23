@@ -1,17 +1,11 @@
 import Constants
 import Colours
 from pybricks.parameters import Color
-
-HC_B_CHAN = 0
-HC_O_CHANS = 1
-HC_FAST = 2
-HC_SLOW = 3
-HC_REMOTE = 4
-HC_COLOUR = 5
+import Batches
 
 
-def get_controller_config(color):
-    if color == Colours.YELLOW:
+def get_hub_config_by_colour(colour):
+    if colour == Colours.YELLOW:
         return [
             Constants.Channel_HIController,
             [
@@ -23,8 +17,9 @@ def get_controller_config(color):
             0,
             None,
             Color.YELLOW,
+            Batches.HIGHLEY_CONTROLLER,
         ]
-    elif color == Colours.RED:
+    elif colour == Colours.RED:
         return [
             Constants.Channel_OuterCont,
             [Constants.Channel_OuterTrain],
@@ -32,20 +27,21 @@ def get_controller_config(color):
             0,
             None,
             Color.GREEN,
+            Batches.OUTER_CONTROLLER,
         ]
 
     return [
-        "Controller Hub",
         Constants.Channel_InnerCont,
         [Constants.Channel_InnerTrain],
         0,
         0,
         None,
         Color.GREEN,
+        Batches.INNER_CONTROLLER,
     ]
 
 
-def get_hub_config(name: str):
+def get_hub_config_by_name(name: str):
     if name == "Autocoach Hub":
         return [
             Constants.Channel_BlueTrain,
