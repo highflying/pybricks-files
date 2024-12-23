@@ -6,8 +6,8 @@ from pybricks.pupdevices import ColorDistanceSensor
 import Colours
 import Constants
 
-_BROADCAST_INTERVAL = 5000
-_DETECT_DISTANCE = 80
+BROADCAST_INTERVAL = 5000
+DETECT_DISTANCE = 80
 
 
 def wait_for_colour(sensor):
@@ -61,7 +61,7 @@ class ControllerHub:
         if not self.is_broadcasting:
             return
 
-        if self.broadcast_timer.time() < _BROADCAST_INTERVAL:
+        if self.broadcast_timer.time() < BROADCAST_INTERVAL:
             return
 
         self.stop_broadcasting()
@@ -94,7 +94,7 @@ class ControllerHub:
         self.sensor_off = False
         distance = self.sensor.distance()
 
-        if distance < _DETECT_DISTANCE:
+        if distance < DETECT_DISTANCE:
             self.turn_sensor_off()
             return True
 
