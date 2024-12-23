@@ -2,13 +2,12 @@ import Constants
 import Colours
 from pybricks.parameters import Color
 
-HC_NAME = 0
-HC_B_CHAN = 1
-HC_O_CHANS = 2
-HC_FAST = 3
-HC_SLOW = 4
-HC_REMOTE = 5
-HC_COLOUR = 6
+HC_B_CHAN = 0
+HC_O_CHANS = 1
+HC_FAST = 2
+HC_SLOW = 3
+HC_REMOTE = 4
+HC_COLOUR = 5
 
 
 def get_controller_config(color):
