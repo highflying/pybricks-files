@@ -10,7 +10,7 @@ import Constants
 print(mem_info())
 
 hub = TrainHub()
-_MIN_LOOP_INTERVAL = 50
+_MIN_LOOP_INTERVAL = 200
 
 batch = hub.get_initial_batch()
 loop_timer = StopWatch()
@@ -26,6 +26,7 @@ while True:
     if cmd[0] == Cmds.WaitMsg:
         sensor_timer.reset()
         sensor_timer.resume()
+        hub.broadcast(None)
         while True:
             data = hub.observe()
             if len(data) > 0 and data.count(cmd[1]) > 0:
@@ -94,3 +95,4 @@ while True:
     t = _MIN_LOOP_INTERVAL - loop_timer.time()
     if t > 0:
         wait(t)
+    wait(50)
