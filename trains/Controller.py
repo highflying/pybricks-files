@@ -30,7 +30,7 @@ while True:
             train_moving = False
 
     if train_moving or controller.is_broadcasting:
-        controller.sensor_off()
+        controller.turn_sensor_off()
     elif controller.is_sensor_triggered():
         print("trigger")
         controller.broadcast(started_message)
