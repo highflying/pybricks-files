@@ -200,18 +200,14 @@ class TrainHub:
         self.hub.light.on(color)
 
     def broadcast(self, message):
-        print("broadcast", self.hub_config[Constants.HC_BroadcastChannel], message)
         self.hub.ble.broadcast(message)
-        wait(2000)
-        self.hub.ble.broadcast(None)
 
     def observe(self):
         messages = []
         for channel in self.hub_config[Constants.HC_ObserveChannels]:
             received = self.hub.ble.observe(channel)
-            # print('channel', channel)
+
             if received is not None and received != Constants.Msg_Ping:
-                # print('received', received)
                 messages.append(received)
 
         return list(messages)
