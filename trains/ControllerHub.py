@@ -37,6 +37,7 @@ def get_config():
 
 class ControllerHub:
     is_broadcasting = False
+    previous_received = None
     sensor_off = False
 
     def __init__(self):
