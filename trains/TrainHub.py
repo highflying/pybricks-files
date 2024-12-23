@@ -43,43 +43,23 @@ class TrainHub:
             pressed = self.remote.buttons.pressed()
 
             if Button.LEFT_PLUS in pressed:
-                self.hub_config[HubConfig.HC_FAST] += 5
-                if self.hub_config[HubConfig.HC_FAST] > 100:
-                    self.hub_config[HubConfig.HC_FAST] = 100
+                self.fast()
                 self.button_timer.reset()
+
             elif Button.LEFT_MINUS in pressed:
-                self.hub_config[HubConfig.HC_FAST] -= 5
-                if self.hub_config[HubConfig.HC_FAST] < 20:
-                    self.hub_config[HubConfig.HC_FAST] = 20
+                self.slow()
                 self.button_timer.reset()
+
             elif Button.LEFT in pressed:
                 self.stop()
                 self.button_timer.reset()
-            if Button.RIGHT_PLUS in pressed:
-                self.hub_config[HubConfig.HC_SLOW] += 5
-                if self.hub_config[HubConfig.HC_SLOW] > 100:
-                    self.hub_config[HubConfig.HC_SLOW] = 100
-                self.button_timer.reset()
-            elif Button.RIGHT_MINUS in pressed:
-                self.hub_config[HubConfig.HC_SLOW] -= 5
-                if self.hub_config[HubConfig.HC_SLOW] < 20:
-                    self.hub_config[HubConfig.HC_SLOW] = 20
-                self.button_timer.reset()
-            elif Button.RIGHT in pressed:
-                self.button_timer.reset()
-                return True
-
-        return False
 
     def stop(self):
         self.current_power = 0
         self.motor.stop()
 
-    def move_forward(self):
-        self.direction = 1
-
-    def move_backwards(self):
-        self.direction = -1
+    def toggle_direction(self):
+        self.direction *= -1
 
     def slow(self):
         self.current_power = self.hub_config[HubConfig.HC_SLOW] * self.direction
