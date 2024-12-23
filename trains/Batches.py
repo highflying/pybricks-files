@@ -169,7 +169,7 @@ def get_batch(id):
         ]
     elif id == BNSTART:
         return [
-            [Cmds.SetDirection, Constants.Direction_KM],
+            [Cmds.SetDirection, Constants.Direction_BN],
             [Cmds.WaitMsg, Constants.Msg_BNArrive],
             [Cmds.StartEmit, Constants.Msg_BNDepart],
             [Cmds.FastTrain],
