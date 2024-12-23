@@ -1,13 +1,13 @@
-Msg_Start = "Start"
-Msg_Stopped = "Stopped"
-Msg_Running = "Running"
-Msg_Ping = "Ping"
-Msg_KMArrive = "KMArrive"
-Msg_KMDepart = "KMDepart"
-Msg_HIArrive = "HIArrive"
-Msg_HIDepart = "HIDepart"
-Msg_BNArrive = "BNArrive"
-Msg_BNDepart = "BNDepart"
+Msg_Start = 1
+Msg_Stopped = 2
+Msg_Running = 3
+Msg_Ping = 4
+Msg_KMArrive = 5
+Msg_KMDepart = 6
+Msg_HIArrive = 7
+Msg_HIDepart = 8
+Msg_BNArrive = 9
+Msg_BNDepart = 10
 
 Channel_InnerTrain = 1
 Channel_InnerCont = 21

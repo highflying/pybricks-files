@@ -70,7 +70,7 @@ class ControllerHub:
         for channel in self.hub_config[HubConfig.HC_O_CHANS]:
             received = self.hub.ble.observe(channel)
 
-            if received is not None and received != Constants.Msg_Ping:
+            if received is not None:
                 messages.append(received)
 
         return list(messages)

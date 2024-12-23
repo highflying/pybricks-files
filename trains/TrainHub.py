@@ -34,7 +34,6 @@ class TrainHub:
         self.motor = DCMotor(Port.A)
         self.sensor = ColorDistanceSensor(Port.B)
         self.direction = 1
-        self.broadcast(Constants.Msg_Ping)
 
         self.light(self.hub_config[HubConfig.HC_COLOUR])
 
@@ -82,7 +81,6 @@ class TrainHub:
             received = self.hub.ble.observe(channel)
 
             if received is not None and received != Constants.Msg_Ping:
-                # print('r', received)
                 messages.append(received)
 
         return list(messages)
