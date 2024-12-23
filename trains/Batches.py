@@ -70,8 +70,6 @@ def get_batch(id):
             [Cmds.WaitMsg, Constants.Msg_KMArrive],
             [Cmds.StartEmit, Constants.Msg_KMDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, HITOBN],
         ]
     elif id == KM:
@@ -82,7 +80,6 @@ def get_batch(id):
             [Cmds.Pause, 1000],
             [Cmds.WaitForColour, Colours.SC_KM],
             [Cmds.StopTrain],
-            [Cmds.StopEmit],
             [Cmds.WaitMsg, Constants.Msg_KMDepart],
             [Cmds.SetDirection, Constants.Direction_BN],
             [Cmds.SlowTrain],
@@ -92,8 +89,6 @@ def get_batch(id):
             [Cmds.WaitMsg, Constants.Msg_KMArrive],
             [Cmds.StartEmit, Constants.Msg_KMDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, HITOBN],
         ]
     elif id == HITOBN:
@@ -105,8 +100,6 @@ def get_batch(id):
             [Cmds.WaitForColour, Colours.SC_HIToBN],
             [Cmds.StopTrain],
             [Cmds.StartEmit, Constants.Msg_HIArrive],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.WaitMsg, Constants.Msg_HIDepart],
             [Cmds.StopEmit],
             [Cmds.StartEmit, Constants.Msg_HIDepart],
@@ -117,13 +110,10 @@ def get_batch(id):
         return [
             [Cmds.SetDirection, Constants.Direction_BN],
             [Cmds.StartEmit, Constants.Msg_HIArrive],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.WaitMsg, Constants.Msg_HIDepart],
+            [Cmds.StopEmit],
             [Cmds.StartEmit, Constants.Msg_HIDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, BN],
         ]
     elif id == HITOKM:
@@ -135,26 +125,20 @@ def get_batch(id):
             [Cmds.WaitForColour, Colours.SC_HIToKM],
             [Cmds.StopTrain],
             [Cmds.StartEmit, Constants.Msg_HIArrive],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.WaitMsg, Constants.Msg_HIDepart],
+            [Cmds.StopEmit],
             [Cmds.StartEmit, Constants.Msg_HIDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, KM],
         ]
     elif id == HITOKMSTART:
         return [
             [Cmds.SetDirection, Constants.Direction_KM],
             [Cmds.StartEmit, Constants.Msg_HIArrive],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.WaitMsg, Constants.Msg_HIDepart],
+            [Cmds.StopEmit],
             [Cmds.StartEmit, Constants.Msg_HIDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, KM],
         ]
     elif id == BN:
@@ -165,7 +149,6 @@ def get_batch(id):
             [Cmds.Pause, 1000],
             [Cmds.WaitForColour, Colours.SC_BN],
             [Cmds.StopTrain],
-            [Cmds.StopEmit],
             [Cmds.WaitMsg, Constants.Msg_BNDepart],
             [Cmds.SetDirection, Constants.Direction_KM],
             [Cmds.SlowTrain],
@@ -175,8 +158,6 @@ def get_batch(id):
             [Cmds.WaitMsg, Constants.Msg_BNArrive],
             [Cmds.StartEmit, Constants.Msg_BNDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, HITOKM],
         ]
     elif id == BNSTART:
@@ -185,8 +166,6 @@ def get_batch(id):
             [Cmds.WaitMsg, Constants.Msg_BNArrive],
             [Cmds.StartEmit, Constants.Msg_BNDepart],
             [Cmds.FastTrain],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
             [Cmds.AddBatch, HITOKM],
         ]
     elif id == INNER_CONTROLLER:
