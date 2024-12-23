@@ -13,57 +13,51 @@ BN = 8
 BNSTART = 9
 HITOKM = 10
 HITOKMSTART = 11
-INNER_CONTROLLER = 12
-OUTER_CONTROLLER = 13
-HIGHLEY_CONTROLLER = 14
 
 
 def get_batch(id):
-    if id == INNERLOOP:
-        return [
-            [Cmds.SetDirection, Constants.Direction_KM],
-            [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
-            [Cmds.FastTrain],
-            [Cmds.WaitForColour, Colours.TEAL],
-            [Cmds.WaitForColour, Colours.TEAL],
-            [Cmds.SlowTrain],
-            [Cmds.WaitForColour, Colours.MEDIUMBLUE],
-            [Cmds.StopTrain],
-            [Cmds.StartEmit, Constants.Msg_Stopped],
-            [Cmds.AddBatch, INNERLOOP],
-        ]
-    elif id == INNERSIDING:
-        return [
-            [Cmds.SetDirection, Constants.Direction_KM],
-            [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
-            [Cmds.FastTrain],
-            [Cmds.WaitForColour, Colours.TEAL],
-            [Cmds.WaitForColour, Colours.TEAL],
-            [Cmds.WaitForColour, Colours.MEDIUMBLUE],
-            [Cmds.SlowTrain],
-            [Cmds.WaitForColour, Colours.TEAL],
-            [Cmds.StopTrain],
-            [Cmds.SetDirection, Constants.Direction_BN],
-            [Cmds.Pause, 1000],
-            [Cmds.SlowTrain],
-            [Cmds.WaitForColour, Colours.MEDIUMBLUE],
-            [Cmds.StopTrain],
-            [Cmds.SetDirection, Constants.Direction_KM],
-            [Cmds.StartEmit, Constants.Msg_Stopped],
-            [Cmds.AddBatch, INNERSIDING],
-        ]
-    elif id == OUTERLOOP:
-        return [
-            [Cmds.SetDirection, Constants.Direction_KM],
-            [Cmds.WaitMsg, Constants.Channel_OuterCont, Constants.Msg_Start],
-            [Cmds.FastTrain],
-            [Cmds.WaitForColour, Colours.TEAL],
-            [Cmds.SlowTrain],
-            [Cmds.WaitForColour, Colours.MEDIUMBLUE],
-            [Cmds.StopTrain],
-            [Cmds.StartEmit, Constants.Msg_Stopped],
-            [Cmds.AddBatch, OUTERLOOP],
-        ]
+    # if id == INNERLOOP:
+    #     return [
+    #         [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
+    #         [Cmds.FastTrain],
+    #         [Cmds.WaitForColour, Colours.TEAL],
+    #         [Cmds.WaitForColour, Colours.TEAL],
+    #         [Cmds.SlowTrain],
+    #         [Cmds.WaitForColour, Colours.MEDIUMBLUE],
+    #         [Cmds.StopTrain],
+    #         [Cmds.StartEmit, Constants.Msg_Stopped],
+    #         [Cmds.AddBatch, INNERLOOP],
+    #     ]
+    # elif id == INNERSIDING:
+    #     return [
+    #         [Cmds.WaitMsg, Constants.Channel_InnerCont, Constants.Msg_Start],
+    #         [Cmds.FastTrain],
+    #         [Cmds.WaitForColour, Colours.TEAL],
+    #         [Cmds.WaitForColour, Colours.TEAL],
+    #         [Cmds.WaitForColour, Colours.MEDIUMBLUE],
+    #         [Cmds.SlowTrain],
+    #         [Cmds.WaitForColour, Colours.TEAL],
+    #         [Cmds.StopTrain],
+    #         [Cmds.ToggleDirection],
+    #         [Cmds.Pause, 1000],
+    #         [Cmds.SlowTrain],
+    #         [Cmds.WaitForColour, Colours.MEDIUMBLUE],
+    #         [Cmds.StopTrain],
+    #         [Cmds.ToggleDirection],
+    #         [Cmds.StartEmit, Constants.Msg_Stopped],
+    #         [Cmds.AddBatch, INNERSIDING],
+    #     ]
+    # elif id == OUTERLOOP:
+    #     return [
+    #         [Cmds.WaitMsg, Constants.Channel_OuterCont, Constants.Msg_Start],
+    #         [Cmds.FastTrain],
+    #         [Cmds.WaitForColour, Colours.TEAL],
+    #         [Cmds.SlowTrain],
+    #         [Cmds.WaitForColour, Colours.MEDIUMBLUE],
+    #         [Cmds.StopTrain],
+    #         [Cmds.StartEmit, Constants.Msg_Stopped],
+    #         [Cmds.AddBatch, OUTERLOOP],
+    #     ]
     if id == KMSTART:
         return [
             [Cmds.SetDirection, Constants.Direction_KM],
@@ -116,6 +110,19 @@ def get_batch(id):
             [Cmds.FastTrain],
             [Cmds.AddBatch, BN],
         ]
+    # elif id == HITOBN:
+    #     return [
+    #         [Cmds.WaitForColour, Colours.SC_HIToBN],
+    #         [Cmds.SlowTrain],
+    #         [Cmds.WaitForColour, Colours.SC_HIToKM],
+    #         [Cmds.StopTrain],
+    #         [Cmds.StartEmit, Constants.Msg_HIArrive],
+    #         [Cmds.WaitMsg, Constants.Msg_HIDepart],
+    #         [Cmds.StopEmit],
+    #         [Cmds.StartEmit, Constants.Msg_HIDepart],
+    #         [Cmds.FastTrain],
+    #         [Cmds.AddBatch, KM],
+    #     ]
     elif id == HITOKM:
         return [
             [Cmds.SetDirection, Constants.Direction_KM],
@@ -168,34 +175,6 @@ def get_batch(id):
             [Cmds.FastTrain],
             [Cmds.AddBatch, HITOKM],
         ]
-    elif id == INNER_CONTROLLER:
-        return [
-            [Cmds.WaitSensor],
-            [Cmds.StartEmit, Constants.Msg_Start],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
-            [Cmds.WaitMsg, Constants.Msg_Stopped, 30_000],
-            [Cmds.AddBatch, INNER_CONTROLLER],
-        ]
-    elif id == OUTER_CONTROLLER:
-        return [
-            [Cmds.WaitSensor],
-            [Cmds.SensorOff],
-            [Cmds.StartEmit, Constants.Msg_Start],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
-            [Cmds.WaitMsg, Constants.Msg_Stopped, 30_000],
-            [Cmds.AddBatch, OUTER_CONTROLLER],
-        ]
-    elif id == HIGHLEY_CONTROLLER:
-        return [
-            [Cmds.WaitSensor],
-            [Cmds.SensorOff],
-            [Cmds.StartEmit, Constants.Msg_HIDepart],
-            [Cmds.Pause, 5000],
-            [Cmds.StopEmit],
-            [Cmds.WaitMsg, Constants.Msg_HIArrive, 30_000],
-            [Cmds.AddBatch, HIGHLEY_CONTROLLER],
-        ]
 
-    raise Exception("Batch not found")
+    print("Unknown batch", id)
+    return []
