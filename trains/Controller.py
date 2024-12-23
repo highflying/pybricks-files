@@ -1,4 +1,3 @@
-from pybricks.parameters import Color
 from pybricks.tools import wait, StopWatch
 import Constants
 from ControllerHub import ControllerHub
