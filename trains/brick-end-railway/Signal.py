@@ -1,5 +1,5 @@
 from pybricks.pupdevices import Motor
-from pybricks.parameters import Port
+from pybricks.parameters import Port, Stop
 from pybricks.tools import wait
 
 class Signal(object):
@@ -10,10 +10,10 @@ class Signal(object):
         self.calibrate()
 
     def calibrate(self):
-        self._motor.run_until_stalled(20)
+        self._motor.run_until_stalled(20, Stop.COAST, 20)
         wait(500)
         self.min = self._motor.angle()
-        self._motor.run_until_stalled(-20)
+        self._motor.run_until_stalled(-20, Stop.COAST, 20)
         wait(500)
         self.max = self._motor.angle()
         wait(2000)

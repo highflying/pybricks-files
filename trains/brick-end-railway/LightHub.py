@@ -46,8 +46,9 @@ class LightHub(object):
                 raise RuntimeError
 
         if Button.LEFT in pressed:
-            self.light.ghost()
-
+            self.light.ghost_on()
+        else:
+            self.light.ghost_off()
         # elif Button.RIGHT in pressed:
         #     self.point.set_divergent()
 

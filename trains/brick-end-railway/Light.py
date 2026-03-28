@@ -4,10 +4,11 @@ from pybricks.tools import wait
 class LightController(object):
     def __init__(self, port):
         self.light = Light(port)
+        self.on = False
 
 
     def ghost(self):
-        for brightness in range(0, 101, 2):  # Step by 2% for smoother transition
+        for brightness in range(0, 101, 20):  # Step by 2% for smoother transition
             self.light.on(brightness)
             wait(100)  # 50 steps * 100ms = 5000ms = 5 seconds
 
@@ -15,11 +16,36 @@ class LightController(object):
         self.light.on(100)
         wait(10000)
 
-        for brightness in range(100, -1, -5):
+        for brightness in range(100, -1, -20):
             self.light.on(brightness)
             wait(100)
 
         # Ensure light is completely off
         self.light.off()
+
+    def ghost_on(self):
+        if self.on:
+            return
+
+        for brightness in range(0, 101, 20):  # Step by 2% for smoother transition
+            self.light.on(brightness)
+            wait(100)  # 50 steps * 100ms = 5000ms = 5 seconds
+
+        # Stay at full brightness for 10 seconds
+        self.light.on(100)
+        self.on = True
+        # wait(10000)
+    
+    def ghost_off(self):
+        if not self.on:
+            return
+
+        for brightness in range(100, -1, -20):
+            self.light.on(brightness)
+            wait(100)
+
+        # Ensure light is completely off
+        self.light.off()
+        self.on = False
 
 

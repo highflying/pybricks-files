@@ -30,7 +30,10 @@ class SignalHub(object):
     def determine_state(self):
         trainData = self._hub.ble.observe(self.line_channel)
 
-        if trainData == self.direction:
+        if trainData == self.direction or trainData == self.direction + 2:
+            if trainData == self.direction + 2:
+                self.ignore_go = False
+
             if self.point is None:
                 return True
 
@@ -52,7 +55,7 @@ class SignalHub(object):
         pressed = self._hub.buttons.pressed();
 
         if Button.CENTER in pressed:
-            self.signal.set_stop()
+            self.signal.set_go()
             raise SystemExit
 
         should_go = self.determine_state()

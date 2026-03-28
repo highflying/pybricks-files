@@ -52,7 +52,10 @@ class LevelCrossingHub(object):
                     self.auto_open_timer.pause()
                     self.auto_open_timer.reset()
                 self.ignore_close = False
-            elif data == Messages.Forward or data == Messages.Backward:
+            elif data == Messages.Forward or data == Messages.Backward or data == Messages.ForwardStart or data == Messages.BackwardStart:
+                if data == Messages.ForwardStart or data == Messages.BackwardStart:
+                    self.ignore_close = False
+
                 # print('Received moving')
                 if self.open and not self.ignore_close:
                     self.close_gates()

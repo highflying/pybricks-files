@@ -17,11 +17,12 @@ class SensorColour:
 
 stop_interval = 5000
 continue_interval = 2000
-hub_name = 'bercont'
+start_interval = 10000
+hub_name = 'loopcont'
 controller_timeout = 30000
 default_power = 60
 
-debug_colour = True
+debug_colour = False
 
 class TrainHub(object):
     def __init__(self):
@@ -32,6 +33,7 @@ class TrainHub(object):
         self.timer = StopWatch()
         self._sensor = ColorDistanceSensor(Port.B)
         self.power = default_power
+        self.start_timer = StopWatch()
         self.stop_timer = StopWatch()
         self.stop()
     
@@ -73,10 +75,13 @@ class TrainHub(object):
             self._hub.ble.broadcast(Messages.Stopped)
 
     def start(self):
-        self._hub.ble.broadcast(self.direction)
+        self.start_timer.reset()
+        self.start_timer.resume()
+
+        self._hub.ble.broadcast(self.direction + 2)
         for _ in range(20):
             wait(100)
-            self._hub.ble.broadcast(self.direction)
+            self._hub.ble.broadcast(self.direction + 2)
         if self.direction == Messages.Forward:
             self._motor.dc(self.power)
         else:
@@ -154,8 +159,14 @@ while True:
     train.sensor()
 
     if train.running:
-        train._hub.ble.broadcast(train.direction)
+        if train.start_timer.time() < start_interval:
+            # print('start', train.direction)
+            train._hub.ble.broadcast(train.direction + 2)
+        else:
+            # print(train.direction)
+            train._hub.ble.broadcast(train.direction)
     else:
+        # print('stopped')
         train._hub.ble.broadcast(Messages.Stopped)
 
     wait(50)
