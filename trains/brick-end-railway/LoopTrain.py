@@ -51,21 +51,6 @@ class TrainHub(object):
             else:
                 raise RuntimeError
 
-    def set_led_colour(self):
-        try:
-            self._remote.light.on(Color.GREEN)
-        except OSError as ex:
-            if ex.errno == ENODEV:
-                self.remote_connected = False
-            else:
-                print(ex)
-                raise RuntimeError
-
-        if self.remote_connected:
-            self._hub.light.on(Color.GREEN)
-        else:
-            self._hub.light.on(Color.RED)
-
     def stop(self):
         self._motor.stop()
         self.running = False
@@ -160,13 +145,10 @@ while True:
 
     if train.running:
         if train.start_timer.time() < start_interval:
-            # print('start', train.direction)
             train._hub.ble.broadcast(train.direction + 2)
         else:
-            # print(train.direction)
             train._hub.ble.broadcast(train.direction)
     else:
-        # print('stopped')
         train._hub.ble.broadcast(Messages.Stopped)
 
     wait(50)
