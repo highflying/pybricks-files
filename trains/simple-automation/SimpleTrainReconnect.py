@@ -6,10 +6,10 @@ from uerrno import ENODEV, ETIMEDOUT
 
 # teal
 min_h = 170
-max_h = 195
+max_h = 200
 min_s = 80
 max_s = 100
-min_v = 58
+min_v = 50
 max_v = 76
 
 stop_interval = 5000
@@ -31,6 +31,7 @@ class TrainHub(object):
         self._motor = DCMotor(Port.A)
         self.has_sensor = False
         self.position = 0
+        self.stop_at_station = False
         # self.timer = StopWatch()
         
         try:
@@ -73,15 +74,6 @@ class TrainHub(object):
             else:
                 raise RuntimeError
 
-    def move_forward(self):
-        # self.power = 40
-        self.start()
-
-    def move_backward(self):
-        # self.power = -40
-        self.power = self.power * -1
-        self.start()
-
     def stop(self):
         self._motor.stop()
         self.set_led_colour(Color.RED)
@@ -110,34 +102,42 @@ class TrainHub(object):
     def run(self):
         if self.remote_connected:
             try:
-                pressed = self._remote.buttons.pressed()
-                
-                if Button.LEFT_PLUS in pressed:
-                    self.move_forward()
-                elif Button.LEFT_MINUS in pressed:
-                    self.move_backward()
-                elif Button.LEFT in pressed:
-                    self.stop()
-                elif Button.RIGHT_PLUS in pressed:
-                    if self.power < 100:
-                        self.power = self.power + 10
-                    self.start()
-                elif Button.RIGHT_MINUS in pressed:
-                    if self.power > -100:
-                        self.power = self.power - 10
-                    self.start()
-                elif Button.RIGHT in pressed:
-                    self.power = 0
-                    self.stop()
+                if self._remote is not None:
+                    pressed = self._remote.buttons.pressed()
+                    
+                    if Button.LEFT_PLUS in pressed:
+                        self.stop_at_station = True
+                        if self.power < 100:
+                            self.power = self.power + 10
+                        self.start()
+                    elif Button.LEFT_MINUS in pressed:
+                        self.stop_at_station = True
+                        if self.power > -100:
+                            self.power = self.power - 10
+                        self.start()
+                    elif Button.LEFT in pressed:
+                        self.power = 0
+                        self.stop()
+                    elif Button.RIGHT_PLUS in pressed:
+                        self.stop_at_station = False
+                        if self.power < 100:
+                            self.power = self.power + 10
+                        self.start()
+                    elif Button.RIGHT_MINUS in pressed:
+                        self.stop_at_station = False
+                        if self.power > -100:
+                            self.power = self.power - 10
+                        self.start()
+                    elif Button.RIGHT in pressed:
+                        self.power = 0
+                        self.stop()
             except OSError as ex:
                 if ex.errno == ENODEV:
                     self.remote_connected = False
                 else:
                     raise RuntimeError
 
-        # print(self.power)
-
-        if self.has_sensor:
+        if self.has_sensor and self.stop_at_station:
             colour = self._sensor.hsv()
 
             if debug_colour:
