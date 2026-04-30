@@ -4,19 +4,19 @@ from pybricks.parameters import Button, Port, Color
 from pybricks.tools import wait
 from uerrno import ENODEV, ETIMEDOUT
 
-# teal
-min_h = 170
-max_h = 200
-min_s = 80
-max_s = 100
-min_v = 50
-max_v = 76
+# Teal
+class SensorColour:
+    min_h = 170
+    max_h = 200
+    min_s = 80
+    max_s = 100
+    min_v = 50
+    max_v = 76
 
 stop_interval = 5000
 continue_interval = 2000
 hub_name = 'bercont'
 controller_timeout = 10000
-default_power = 40
 
 debug_colour = False
 
@@ -25,15 +25,12 @@ class TrainHub(object):
         self._hub = CityHub()
         self._remote = None
         self.connect_remote()
-        # self._remote = Remote(name=hub_name, timeout=controller_timeout)    
-        # self._remote = Remote(timeout=controller_timeout)       
-        # self._remote.name(hub_name)
+
         self._motor = DCMotor(Port.A)
         self.has_sensor = False
         self.position = 0
         self.stop_at_station = False
-        # self.timer = StopWatch()
-        
+
         try:
             self._sensor = ColorDistanceSensor(Port.B)
             self.has_sensor = True
@@ -43,7 +40,7 @@ class TrainHub(object):
             else:
                 raise RuntimeError
 
-        self.power = default_power
+        self.power = 0
         if self.remote_connected:
             self.stop()
         else:
@@ -92,12 +89,10 @@ class TrainHub(object):
         self.stop()
         wait(stop_interval)
         self.start()
-        wait(continue_interval)
         if not self.remote_connected:
             self.connect_remote()
-
-    def reverse_direction(self):
-        self.power = self.power * -1
+        else:
+            wait(continue_interval)
 
     def run(self):
         if self.remote_connected:
@@ -115,7 +110,7 @@ class TrainHub(object):
                         if self.power > -100:
                             self.power = self.power - 10
                         self.start()
-                    elif Button.LEFT in pressed:
+                    elif Button.LEFT in pressed or Button.RIGHT in pressed:
                         self.power = 0
                         self.stop()
                     elif Button.RIGHT_PLUS in pressed:
@@ -128,9 +123,7 @@ class TrainHub(object):
                         if self.power > -100:
                             self.power = self.power - 10
                         self.start()
-                    elif Button.RIGHT in pressed:
-                        self.power = 0
-                        self.stop()
+
             except OSError as ex:
                 if ex.errno == ENODEV:
                     self.remote_connected = False
@@ -143,17 +136,17 @@ class TrainHub(object):
             if debug_colour:
                 print(colour)
 
-            if ( colour.h >= min_h and colour.h <= max_h 
-                and colour.s >= min_s and colour.s <= max_s 
-                and colour.v >= min_v and colour.v <= max_v ):
+            if ( colour.h >= SensorColour.min_h
+                and colour.h <= SensorColour.max_h 
+                and colour.s >= SensorColour.min_s
+                and colour.s <= SensorColour.max_s 
+                and colour.v >= SensorColour.min_v
+                and colour.v <= SensorColour.max_v ):
 
                 self.position = self.position + 1
 
                 if self.position == 1:
                     self.pause_at_station()
-                # elif self.position == 2:
-                #     self.reverse_direction()
-                #     self.pause_at_station()
                     self.position = 0
 
 
